@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  rars:
+    command: build
+    environment:
+      - NODE_ENV=production
+  server:
+    command: build
+    environment:
+      - NODE_ENV=production

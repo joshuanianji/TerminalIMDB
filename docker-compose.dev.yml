@@ -1,0 +1,17 @@
+version: "3"
+services:
+  server:
+    build: 
+      context: ./server
+      dockerfile: ./Dockerfile.dev
+    volumes:
+      - ./server:/src/
+      - ./client/node_modules:/src/node_modules
+
+  client:
+    build: 
+      context: ./client
+      dockerfile: ./Dockerfile.dev
+    volumes:
+      - ./client:/src
+      - ./server/node_modules:/src/node_modules
