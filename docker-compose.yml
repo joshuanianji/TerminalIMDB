@@ -12,6 +12,8 @@ services:
       - 27017:27017 #necessary?
 
   server:
+    ports:
+      - 3001:3001
     links:
       - mongo
     depends_on:
