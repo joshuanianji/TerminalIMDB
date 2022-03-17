@@ -13,6 +13,8 @@ docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
 
 This command starts the client and server in development mode.
 
+The `mongo_db` directory is used to store the database that mongodb uses, if you want to use it to inspect the data.
+
 - Check the client at [http://localhost:3000](http://localhost:3000).
 - Check the server at [http://localhost:3001](http://localhost:3001).
 
