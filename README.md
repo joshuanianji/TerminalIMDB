@@ -8,7 +8,7 @@ Prerequisites:
 
 ```bash
 mkdir mongo_db
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 ```
 
 This command starts the client and server in development mode.
