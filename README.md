@@ -1,6 +1,6 @@
 # 291-miniproject-2
 
-## Run 
+## Run
 
 ```bash
 mkdir mongo_db
