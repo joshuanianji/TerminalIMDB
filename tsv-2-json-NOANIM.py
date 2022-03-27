@@ -1,9 +1,5 @@
-from colorama import Fore, Back, Style, init
-from tqdm import tqdm
 import json
 import time
-import sys
-import os
 
 def starting_text():
     '''
@@ -18,19 +14,15 @@ def starting_text():
         ' #+#       #+#    #+#   #+#        #+#       #+# #+#         #+#       ',
         '##########  ########  #######      ###       ### ###        ########## '
     ]
-    rainbow = [Fore.RED, Fore.YELLOW, Fore.GREEN, Fore.BLUE, Fore.CYAN, Fore.MAGENTA, Fore.WHITE]
 
-    for (text, color) in zip(texts, rainbow):
-        if (color == Fore.WHITE):
-            print(Style.DIM + color + text + Fore.RESET + Style.RESET_ALL)
-        else:
-            print(color + text + Fore.RESET)
+    for text in texts:
+            print(text)
     
     time.sleep(0.075) 
-    print('\n\n' + Fore.WHITE + 'Welcome to TSV2JSON!' + Fore.RESET)
+    print('Welcome to TSV2JSON!')
 
     time.sleep(0.075) 
-    print('\n' + 'Made by ' + Fore.CYAN + 'Vedant' + Fore.RESET + ', ' + Fore.GREEN + 'Kailash' + Fore.RESET + ' and ' + Fore.BLUE + 'Joshua' + Fore.RESET + '.')
+    print('Made by ' + 'Vedant' + ', ' + 'Kailash' + ' and ' + 'Joshua' + '.')
 
     # Boot screen
 
@@ -46,11 +38,11 @@ def starting_text():
     i = 0
 
     print('\n')
-    while (counttime <= 35):
+    while (counttime != 100):
           
         # used to change the animation speed
         # smaller the value, faster will be the animation
-        time.sleep(0.05) 
+        time.sleep(0.025) 
         print ("\033[A                             \033[A")
         print('Booting up...' + animation[anicount])
         anicount = (anicount + 1) % 4
@@ -60,7 +52,7 @@ def starting_text():
 
 def tsv2json(input_file,output_file):
 
-    print('\n' + 'Converting ' + Fore.CYAN + input_file + Fore.RESET + ' to ' + Fore.GREEN + output_file + Fore.RESET +'...' )
+    print('\n' + 'Converting ' + input_file + ' to ' + output_file + '...' )
 
     arr = []
     file = open(input_file, 'r')
@@ -75,8 +67,6 @@ def tsv2json(input_file,output_file):
     pos = file.tell()
     file_length = len(file.readlines())
     file.seek(pos)
-
-    pbar = tqdm(total=file_length)
 
     for line in file:
         d = {}
@@ -103,19 +93,16 @@ def tsv2json(input_file,output_file):
 
         # we will use strip to remove '\n'.
         arr.append(d)
-        pbar.update()
-    pbar.close()
 
     # we will append all the individual dictionaires into list 
     # and dump into file.
 
-    print('Writing data to ' + Fore.GREEN + output_file + Fore.RESET + '...')
+    print('Writing data to ' + output_file + '...')
     with open(output_file, 'w', encoding='utf-8') as output_file:
         output_file.write(json.dumps(arr, indent=4))
-    print(Fore.GREEN + 'Done!' + Fore.RESET)
+    print('Done!')
 
 def main():
-    init()
     starting_text()
     #saving the names of the files to be converted in list 
     fileNames = ['name.basics', 'title.basics', 'title.ratings', 'title.principals']
