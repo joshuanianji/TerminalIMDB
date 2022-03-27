@@ -1,4 +1,4 @@
 *.tsv
 *.json
 env/
-mongo-data
+mongo_data

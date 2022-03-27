@@ -46,7 +46,7 @@ def starting_text():
     i = 0
 
     print('\n')
-    while (counttime <= 35):
+    while (counttime <= 15):
           
         # used to change the animation speed
         # smaller the value, faster will be the animation

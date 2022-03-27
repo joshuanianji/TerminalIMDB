@@ -38,11 +38,11 @@ def starting_text():
     i = 0
 
     print('\n')
-    while (counttime != 100):
+    while (counttime != 15):
           
         # used to change the animation speed
         # smaller the value, faster will be the animation
-        time.sleep(0.025) 
+        time.sleep(0.05) 
         print ("\033[A                             \033[A")
         print('Booting up...' + animation[anicount])
         anicount = (anicount + 1) % 4
