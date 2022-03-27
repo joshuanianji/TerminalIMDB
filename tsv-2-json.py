@@ -1,9 +1,38 @@
+from colorama import Fore, Back, Style, init
+from tqdm import tqdm
 import json
 import time
 import sys
 import os
 
+def starting_text():
+    '''
+    fancy starting text
+    '''
+    texts = [
+        ' ::::::::   ::::::::    :::        ::::    ::::  :::::::::   ::::::::  ',
+        ':+:    :+: :+:    :+: :+:+:        +:+:+: :+:+:+ :+:    :+: :+:    :+: ',
+        '      +:+  +:+    +:+   +:+        +:+ +:+:+ +:+ +:+    +:+       +:+  ',
+        '    +#+     +#++:++#+   +#+        +#+  +:+  +#+ +#++:++#+      +#+    ',
+        '  +#+             +#+   +#+        +#+       +#+ +#+          +#+      ',
+        ' #+#       #+#    #+#   #+#        #+#       #+# #+#         #+#       ',
+        '##########  ########  #######      ###       ### ###        ########## '
+    ]
+    rainbow = [Fore.RED, Fore.YELLOW, Fore.GREEN, Fore.BLUE, Fore.CYAN, Fore.MAGENTA, Fore.WHITE]
+
+    for (text, color) in zip(texts, rainbow):
+        if (color == Fore.WHITE):
+            print(Style.DIM + color + text + Fore.RESET + Style.RESET_ALL)
+        else:
+            print(color + text + Fore.RESET)
+    
+    print('\n\n' + Fore.WHITE + 'Welcome to TSV2JSON! Converting TSV to JSON...' + Fore.RESET)
+
+
 def tsv2json(input_file,output_file):
+
+    print('\n' + 'Converting ' + Fore.CYAN + input_file + Fore.RESET + ' to ' + Fore.GREEN + output_file + Fore.RESET +'...' )
+
     arr = []
     file = open(input_file, 'r')
     a = file.readline()
@@ -12,7 +41,11 @@ def tsv2json(input_file,output_file):
     # so we will store it in an array and move to 
     # next line in input_file.
     titles = [t.strip() for t in a.split('\t')]
-    for line in file:
+
+    # progress bar
+    # pbar = tqdm(total=len(file.readlines()))
+
+    for line in tqdm(file):
         d = {}
         for t, f in zip(titles, line.split('\t')):
 
@@ -38,12 +71,17 @@ def tsv2json(input_file,output_file):
         # we will use strip to remove '\n'.
         arr.append(d)
 
-        # we will append all the individual dictionaires into list 
-        # and dump into file.
+    # we will append all the individual dictionaires into list 
+    # and dump into file.
+
+    print('\n' + 'Writing data to ' + Fore.GREEN + output_file + Fore.RESET + '...')
     with open(output_file, 'w', encoding='utf-8') as output_file:
         output_file.write(json.dumps(arr, indent=4))
+    print('\n' + Fore.GREEN + 'Done!' + Fore.RESET)
 
 def main():
+    init()
+    starting_text()
     #saving the names of the files to be converted in list 
     fileNames = ['name.basics', 'title.basics', 'title.ratings', 'title.principals']
     for name in fileNames:
