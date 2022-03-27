@@ -14,7 +14,7 @@ pip install -r requirements.txt
 
 ```bash
 mkdir mongo_data
-mongod --port 27017 --dbpath ./mongo_data &
+mongod --port portNumber --dbpath ./mongo_data &
 ```
 
 In another terminal,
