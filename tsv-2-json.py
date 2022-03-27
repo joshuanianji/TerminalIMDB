@@ -26,7 +26,36 @@ def starting_text():
         else:
             print(color + text + Fore.RESET)
     
-    print('\n\n' + Fore.WHITE + 'Welcome to TSV2JSON! Converting TSV to JSON...' + Fore.RESET)
+    time.sleep(0.075) 
+    print('\n\n' + Fore.WHITE + 'Welcome to TSV2JSON!' + Fore.RESET)
+
+    time.sleep(0.075) 
+    print('\n' + 'Made by ' + Fore.CYAN + 'Vedant' + Fore.RESET + ', ' + Fore.GREEN + 'Kailash' + Fore.RESET + ' and ' + Fore.BLUE + 'Joshua' + Fore.RESET + '.')
+
+    # Boot screen
+
+    # String for creating the rotating line
+    animation = "|/-\\"
+    anicount = 0
+
+    # used to keep the track of
+    # the duration of animation
+    counttime = 0        
+
+    # pointer for travelling the loading string
+    i = 0
+
+    print('\n')
+    while (counttime != 100):
+          
+        # used to change the animation speed
+        # smaller the value, faster will be the animation
+        time.sleep(0.075) 
+        print ("\033[A                             \033[A")
+        print('Booting up...' + animation[anicount])
+        anicount = (anicount + 1) % 4
+        counttime = counttime + 1
+
 
 
 def tsv2json(input_file,output_file):
