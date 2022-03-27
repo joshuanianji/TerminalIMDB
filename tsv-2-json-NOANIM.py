@@ -16,7 +16,7 @@ def starting_text():
     ]
 
     for text in texts:
-            print(text)
+        print(text)
     
     time.sleep(0.075) 
     print('Welcome to TSV2JSON!')
