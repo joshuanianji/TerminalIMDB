@@ -42,10 +42,14 @@ def tsv2json(input_file,output_file):
     # next line in input_file.
     titles = [t.strip() for t in a.split('\t')]
 
-    # progress bar
-    # pbar = tqdm(total=len(file.readlines()))
+    # find length of file
+    pos = file.tell()
+    file_length = len(file.readlines())
+    file.seek(pos)
 
-    for line in tqdm(file):
+    pbar = tqdm(total=file_length)
+
+    for line in file:
         d = {}
         for t, f in zip(titles, line.split('\t')):
 
@@ -70,14 +74,16 @@ def tsv2json(input_file,output_file):
 
         # we will use strip to remove '\n'.
         arr.append(d)
+        pbar.update()
+    pbar.close()
 
     # we will append all the individual dictionaires into list 
     # and dump into file.
 
-    print('\n' + 'Writing data to ' + Fore.GREEN + output_file + Fore.RESET + '...')
+    print('Writing data to ' + Fore.GREEN + output_file + Fore.RESET + '...')
     with open(output_file, 'w', encoding='utf-8') as output_file:
         output_file.write(json.dumps(arr, indent=4))
-    print('\n' + Fore.GREEN + 'Done!' + Fore.RESET)
+    print(Fore.GREEN + 'Done!' + Fore.RESET)
 
 def main():
     init()
