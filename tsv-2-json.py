@@ -1,4 +1,7 @@
 import json
+import time
+import sys
+import os
 
 def tsv2json(input_file,output_file):
     arr = []
@@ -31,7 +34,7 @@ def tsv2json(input_file,output_file):
                 if temp == '\\N':
                     temp = None
                 d[t] = temp
-              
+
         # we will use strip to remove '\n'.
         arr.append(d)
 
@@ -39,7 +42,7 @@ def tsv2json(input_file,output_file):
         # and dump into file.
     with open(output_file, 'w', encoding='utf-8') as output_file:
         output_file.write(json.dumps(arr, indent=4))
-  
+
 def main():
     #saving the names of the files to be converted in list 
     fileNames = ['name.basics', 'title.basics', 'title.ratings', 'title.principals']
@@ -48,8 +51,8 @@ def main():
         output_filename = name + '.json'
         tsv2json(input_filename,output_filename)
 
-    
-    
+
+
 #calling the function
 
 if __name__ == '__main__':
