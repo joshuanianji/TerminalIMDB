@@ -4,6 +4,7 @@ import os
 from colorama import Fore, Back, Style
 import colorama
 import util
+from pymongo.errors import ServerSelectionTimeoutError
 
 
 def mongoConnect():
@@ -12,14 +13,18 @@ def mongoConnect():
     Returns the resulting client 
     """
     while True:
-        port = input('Enter a port: ')
         try:
+            port = int(input('Enter a port: '))
             if port:
-                client = MongoClient(f'mongodb://localhost:{port}')
+                client = MongoClient(host = 'localhost', port = port, serverSelectionTimeoutMS = 15)
+                client.server_info()
             else:
                 client = MongoClient()
+        except ServerSelectionTimeoutError as e:
+            print(f'{Fore.RED}Invalid port number {port}!{Fore.RESET}')
+            continue
         except Exception as err:
-            print(f'{Fore.RED}Invalid port: {err}\nPlease try again!{Fore.RESET}')
+            print(f'{Fore.RED}Invalid port! {err}\nPlease try again!{Fore.RESET}')
             continue
         else:
             return client
