@@ -5,8 +5,8 @@ Davood 2: electric boogaloo.
 ## Local Development
 
 ```bash
-python -m env venv 
-source venv/bin/activate
+python3 -m venv env
+source env/bin/activate
 pip install -r requirements.txt
 ```
 
@@ -20,5 +20,5 @@ mongod --port portNumber --dbpath ./mongo_data &
 In another terminal,
 
 ```bash
-python load_json.py
+python load-json.py
 ```
