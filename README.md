@@ -22,3 +22,12 @@ In another terminal,
 ```bash
 python load-json.py
 ```
+
+## SSH Stuff on the Server
+
+If i'm working on the lab machines, I'll have to make sure ssh is working.
+
+```bash
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_github
+```

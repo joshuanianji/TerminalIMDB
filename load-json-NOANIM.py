@@ -55,8 +55,11 @@ def prog():
             client = MongoClient('mongodb://localhost:'+portNumber)
         except:
             print('Please Enter the correct portNumber. Cannot connect')
+            continue
         finally:
             break
+    
+    print('Connected to MongoDB!')
 
     #create or open the LabH01 database server
     db = client["291db"]

@@ -62,8 +62,11 @@ def prog():
             client = MongoClient('mongodb://localhost:'+portNumber)
         except:
             print('Please Enter the correct portNumber. Cannot connect')
+            continue
         finally:
             break
+    
+    print(Fore.GREEN + 'Connected to MongoDB!' + Fore.RESET)
 
     #create or open the LabH01 database server
     db = client["291db"]
@@ -88,7 +91,7 @@ def prog():
         print('Inserting data into ' + Fore.CYAN + col + Fore.RESET + '...')
         collection.insert_many(data)
 
-    print('Done!')
+    print(Fore.GREEN + 'Done!' + Fore.RESET)
 
 
 def main():
