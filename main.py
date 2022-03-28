@@ -156,8 +156,15 @@ def searchTitle(client):
     
     Input: client - pymongo client to be processed
     """
-    #TODO
-    pass
+    print(f'{commands.ST.color}Please enter in your keywords (space separated), or "BACK" to exit{Fore.RESET}')
+    keywords = input('>').strip().split()
+    
+    if keywords[0] == 'BACK':
+        print(f'{commands.ST.color}Returning to main menu...{Fore.RESET}')
+        return
+    else:
+        pass
+
 
 
 
