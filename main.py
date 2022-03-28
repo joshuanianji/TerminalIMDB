@@ -1,6 +1,9 @@
 from pymongo import MongoClient
 from getpass import getpass
 import os
+from colorama import Fore, Back, Style
+import colorama
+import util
 
 
 def mongoConnect():
@@ -9,41 +12,64 @@ def mongoConnect():
     Returns the resulting client 
     """
     while True:
-        port = input("Enter a port: ")
+        port = input('Enter a port: ')
         try:
             if port:
                 client = MongoClient(f'mongodb://localhost:{port}')
             else:
                 client = MongoClient()
         except Exception as err:
-            print(f"Invalid port: {err}\nPlease try again!")
+            print(f'{Fore.RED}Invalid port: {err}\nPlease try again!{Fore.RESET}')
+            continue
         else:
             return client
 
 
+commands = {
+    'ST': {
+        'name': 'Search for a title',
+        'color': Fore.RED
+    },
+    'SG': {
+        'name': 'Search for a genre',
+        'color': Fore.YELLOW
+    },
+    'SC': {
+        'name': 'Search for a cast/crew member',
+        'color': Fore.GREEN
+    },
+    'AM': {
+        'name': 'Add a movie',
+        'color': Fore.BLUE
+    },
+    'AC': {
+        'name': 'Add a new cast/crew member',
+        'color': Fore.CYAN
+    },
+    'EX': {
+        'name': 'Close the connection',
+        'color': Fore.MAGENTA
+    }
+}
+
 def mainMenu(client):
-    """
+    '''
     Main user interface for the program
     Handles user inputs and processes the database client appropriately
 
     Input: client - pymongo client to be processed
-    """
-    menuMessage = "Welcome to the main menu! Enter your selection below!"
+    '''
 
     # Generate help message
-    helpMessage = ""
-    commands = ['ST', 'SG', 'SC', 'AM', 'AC', 'EX']
-    tasks = ['Search for a title', 'Search for a genre', 'Search for a cast/crew member', 'Add a new movie', 'Add a new cast/crew member', 'Close the connection']
-    for (command,task) in zip(commands, tasks):
-        helpMessage += f"{command} - {task}\n"
+    helpMessage = ''
+    for cmd, data in commands.items():
+        helpMessage += f"{data['color']} {cmd} - {data['name']}{Fore.RESET}\n"
     helpMessage = helpMessage.strip()
     help = False
 
     while True:
         if not help:
-            os.system("cls" if os.name == "nt" else "clear")
-            printAppHeader()
-            print("Welcome to the main menu! Enter your selection below!")
+            reset_screen('Welcome to the main menu! Enter your selection below!', show_names = True)
         print(helpMessage)
         help = False
 
@@ -61,8 +87,7 @@ def mainMenu(client):
             help = True
 
         elif command == 'ST':
-            os.system("cls" if os.name == "nt" else "clear")
-            printAppHeader()
+            reset_screen()
             print('Searching for a title...')
             searchTitle(client)
             # Remove after implementing exit commands in searchTitle()
@@ -70,8 +95,7 @@ def mainMenu(client):
             getpass(prompt="")
 
         elif command == 'SG':
-            os.system("cls" if os.name == "nt" else "clear")
-            printAppHeader()
+            reset_screen()
             print('Searching for a genre...')
             searchGenre(client)
             # Remove after implementing exit commands in searchGenre()
@@ -79,8 +103,7 @@ def mainMenu(client):
             getpass(prompt="")
 
         elif command == 'SC':
-            os.system("cls" if os.name == "nt" else "clear")
-            printAppHeader()
+            reset_screen()
             print('Searching for a cast/crew member...')
             searchCast(client)
             # Remove after implementing exit commands in searchCast()
@@ -88,8 +111,7 @@ def mainMenu(client):
             getpass(prompt="")
 
         elif command == 'AM':
-            os.system("cls" if os.name == "nt" else "clear")
-            printAppHeader()
+            reset_screen()
             print('Adding a new movie...')
             addMovie(client)
             # Remove after implementing exit commands in addMovie()
@@ -97,8 +119,7 @@ def mainMenu(client):
             getpass(prompt="")
 
         elif command == 'AC':
-            os.system("cls" if os.name == "nt" else "clear")
-            printAppHeader()
+            reset_screen()
             print('Adding a new cast/crew member')
             addCast(client)
             # Remove after implementing exit commands in addCast()
@@ -112,24 +133,11 @@ def mainMenu(client):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 ###TODO: Fill out all functions below
 
-def printAppHeader():
-    #TODO: Print 291 MP2 here in 2-3 lines 
-    #      The print statement below is for testing purposes
-    print("291 MP2") 
+def reset_screen(welcome_text = None, show_names = False):
+    os.system('cls' if os.name == 'nt' else 'clear')
+    util.starting_text(welcome_text, show_names)
 
 
 def searchTitle(client):
@@ -222,6 +230,7 @@ def addCast(client):
 
 
 def main():
+    colorama.init()
     client = mongoConnect()
     mainMenu(client)
     client.close()
