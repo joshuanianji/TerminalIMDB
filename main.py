@@ -5,7 +5,9 @@ import os
 from colorama import Fore, Back, Style
 import colorama
 import util
-
+from pymongo.errors import ServerSelectionTimeoutError
+import time
+from commands.search_title import search_title, show_movie_info
 
 def mongoConnect():
     """
@@ -13,14 +15,20 @@ def mongoConnect():
     Returns the resulting client 
     """
     while True:
-        port = input('Enter a port: ')
         try:
+            # port = util.get_valid_int('Enter a port: ')
+            port = 27017
             if port:
-                client = MongoClient(f'mongodb://localhost:{port}')
+                client = MongoClient(host = 'localhost', port = int(port), serverSelectionTimeoutMS = 15)
+                client.server_info()
+                util.text_with_loading(f'{Fore.GREEN}Connected to MongoDB database! Moving to main menu...{Fore.RESET}')
             else:
                 client = MongoClient()
+        except ServerSelectionTimeoutError as e:
+            print(f'{Fore.RED}Invalid port number {port}!{Fore.RESET}')
+            continue
         except Exception as err:
-            print(f'{Fore.RED}Invalid port: {err}\nPlease try again!{Fore.RESET}')
+            print(f'{Fore.RED}Invalid port! {err}\nPlease try again!{Fore.RESET}')
             continue
         else:
             return client
@@ -75,13 +83,8 @@ def mainMenu(client):
         help = False
 
         # Get user command input
-        while True:
-            command = input("> ").upper()
-            if command != "H" and command not in commands:
-                print("Invalid command. Press 'H' for help.")
-            else:
-                break
 
+        command = util.get_valid_input('> ', lambda cmd: cmd == 'H' or cmd in commands, 'Invalid command. Press "H" for help.', True)
 
         # Handle user input
         if command == 'H':
@@ -90,7 +93,7 @@ def mainMenu(client):
         elif command == 'ST':
             reset_screen()
             print('Searching for a title...')
-            searchTitle(client)
+            search_title(client, commands)
             # Remove after implementing exit commands in searchTitle()
             print("Press Enter to return to the main menu.")
             getpass(prompt="")
@@ -141,19 +144,7 @@ def reset_screen(welcome_text = None, show_names = False):
     util.starting_text(welcome_text, show_names)
 
 
-def searchTitle(client):
-    """
-    Search for titles: 
-        > The user should be able to provide one or more keywords, and the system should retrieve all titles that match all those keywords (AND semantics). 
-        > A keyword matches if it appears in the primaryTitle field (the matches should be case-insensitive). 
-        > A keyword also matches if it has the same value as the year field. 
-        > For each matching title, display all the fields in title_basics. 
-        > The user should be able to select a title to see the rating, the number of votes, the names of cast/crew members and their characters (if any).
-    
-    Input: client - pymongo client to be processed
-    """
-    #TODO
-    pass
+
 
 
 
@@ -370,6 +361,52 @@ def main():
     client.close()
 
 
+
+def main_2():
+    pipeline1 = [
+        {
+            "$lookup":   {
+                    "from" : "title_ratings",
+                    # "localField" :"tconst",
+                    # "foreignField": "tconst",
+                    "let":{"vote":"numVotes"},
+                    "pipeline":[
+                     {"$match": {
+                        "expr": {"$gte": ["$$vote", "$minVoteCount"]}
+                     } },
+                     {
+                     "$project":  
+                    {
+                    "_id": 0,
+                    }}],
+                    "as" : "voteAndRating"
+            }
+                # "project":  
+                # {
+                #     "_id": 0,
+                #     "numVotes": 1, 
+                #     "tconst": 1,
+                #     "primaryTitle": 1,
+                #  },
+                  
+        }
+    ]
+    from pprint import pprint
+    colorama.init()
+    client = mongoConnect()
+    title_basic_collection = client['291db']['title_basic']
+    aggResult2 = title_basic_collection.aggregate(pipeline1)
+    for res in aggResult2:
+        pprint(res)
+    client.close()
+
+
+def main_3():
+    # tt0083528
+    colorama.init()
+    client = mongoConnect()
+    show_movie_info(client, 'tt0083528')
+    client.close()
 
 if __name__ == "__main__":
     main()
