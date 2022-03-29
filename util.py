@@ -1,5 +1,6 @@
 from colorama import Fore, Back, Style
 import time
+from PyInquirer import prompt
 
 RAINBOW = [Fore.RED, Fore.YELLOW, Fore.GREEN, Fore.BLUE, Fore.CYAN, Fore.MAGENTA, Fore.WHITE]
 
@@ -105,3 +106,15 @@ def get_in_list(prompt, L) -> str:
         True
     )
 
+
+def get_valid_inquiry(questions):
+    '''
+    Get a valid inquiry from the user
+    Sometimes inquiry can fail if the user clicks something
+    '''
+    while True:
+        answers = prompt(questions)
+        if answers == {}:
+            print('Please select a correct option (no mouse presses!)')
+        else:
+            return answers
