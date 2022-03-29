@@ -86,7 +86,7 @@ def tsv2json(input_file,output_file):
 
             NestTitles = ['primaryProfession', 'knownForTitles', 'genres', 'characters']
             #integer titles
-            if t == "numVotes" or t == "ordering" or t == "birthYear" or t == "deathYear":
+            if t == "numVotes" or t == "ordering" or t == "birthYear" or t == "deathYear" or t == "startYear" or t == "endYear" or t == 'runtimeMinutes':
                 temp = f.strip()
                 if temp != '\\N':
                     d[t] = int(temp)

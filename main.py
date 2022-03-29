@@ -170,7 +170,7 @@ def searchGenre(client):
   #  print(title_basic_collection.index_information())
     #title_basic_collection.create_index([("genres", TEXT)])
     
-        
+    os.system('cls' if os.name == 'nt' else 'clear')
     genre = input('Tell which genre are you interested to watch? ')
 
 
@@ -185,7 +185,7 @@ def searchGenre(client):
         else:
             break
 
-
+    
     pipeline = [
             { "$unwind": "$genres"},
         {"$match": 
@@ -218,7 +218,8 @@ def searchGenre(client):
            },
         {"$sort":
             {
-                "voteAndRating.averageRating":-1
+                "voteAndRating.averageRating":-1,
+                "voteAndRating.numVotes": -1
             }
         },
      
@@ -238,7 +239,7 @@ def searchGenre(client):
                     "batchSize": 5
                 }
     }
-    #{"$gte": minVoteCount}
+   
 
 
 
@@ -280,14 +281,9 @@ def searchGenre(client):
 
 
     count = 0
-    # for res in aggResult2:
-    #     print(res)
-    #     count+=1
-    #     if count == 3:
-    #         break
-    
+
     if aggResult:
-        os.system('cls' if os.name == 'nt' else 'clear')
+       
         #print(tabulate(aggResult, headers="keys"))
         titleHeader, averageRatHeader, numVotes = "Title ", "AR", "Votes"
         
@@ -299,7 +295,6 @@ def searchGenre(client):
             for res in aggResult:
                 start += 1
                 if start > 100:
-                    print('breaking...')
                     break
                 print(f"|{res['primaryTitle']: <70} | {res['voteAndRating']['averageRating']: <4} | {res['voteAndRating']['numVotes']}") 
             else:
