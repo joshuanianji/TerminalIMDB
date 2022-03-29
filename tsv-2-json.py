@@ -82,9 +82,25 @@ def tsv2json(input_file,output_file):
         d = {}
         for t, f in zip(titles, line.split('\t')):
 
-            # Convert each row into dictionary with keys as titles
+           
+
             NestTitles = ['primaryProfession', 'knownForTitles', 'genres', 'characters']
-            if t in NestTitles:
+            #integer titles
+            if t == "numVotes" or t == "ordering" or t == "birthYear" or t == "deathYear":
+                temp = f.strip()
+                if temp != '\\N':
+                    d[t] = int(temp)
+                else:
+                    d[t] = None
+            elif t == 'averageRating':
+                temp = f.strip()
+                if temp != '\\N':
+                    d[t] = float(temp)
+                else:
+                    d[t] = None
+                #d[t] = float(f.strip())
+            elif t in NestTitles:
+             # Convert each row into dictionary with keys as titles
                 if t == 'primaryProfession' or t == 'knownForTitles' or t == 'genres':
                     #temp = f.strip().split('\n')[0].split(',')
                     temp = f.strip(' \n').split(',')

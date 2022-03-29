@@ -1,4 +1,5 @@
-from pymongo import MongoClient
+from re import L
+from pymongo import MongoClient, TEXT
 from getpass import getpass
 import os
 from colorama import Fore, Back, Style
@@ -166,7 +167,139 @@ def searchGenre(client):
     Input: client - pymongo client to be processed
     """
     #TODO
-    pass
+    db = client['291db']
+
+    title_basic_collection = db['title_basics']
+    title_rating_collection = db['title_ratings']
+
+    title_basic_collection.create_index('tconst')
+    title_rating_collection.create_index('tconst')
+    
+  #  print(title_basic_collection.index_information())
+    #title_basic_collection.create_index([("genres", TEXT)])
+    
+        
+    genre = input('Tell which genre are you interested to watch? ')
+
+
+    while True:
+        try:
+            minVoteCount = int(input('Tell minimum number of votes you would want for the search? '))
+            if minVoteCount < 0:
+                raise ValueError('value needs to be >= 0')
+    
+        except Exception as e:
+                print(e.args)
+        else:
+            break
+
+
+
+
+
+
+
+
+        
+
+    pipeline = [
+            { "$unwind": "$genres"},
+        {"$match": 
+            {"genres": genre
+            }
+        },
+        {   
+            "$lookup":
+            {
+                "from" : "title_ratings",
+                "localField" :"tconst",
+                "foreignField": "tconst",
+                "pipeline":
+                [
+                    {
+                        "$project":
+                        {
+                            "numVotes": 1,
+                            "averageRating": 1,
+                        }
+                    }
+                ],
+                "as" : "voteAndRating"
+            }
+        },
+        {"$unwind": "$voteAndRating"},
+        {"$match": 
+          {"voteAndRating.numVotes": {"$gte": minVoteCount}
+               }   
+           },
+        {"$sort":
+            {
+                "voteAndRating.averageRating":-1
+            }
+        }
+           
+            ]
+    #{"$gte": minVoteCount}
+
+
+
+    pipeline1 = [
+        {
+            "$lookup":   {
+                    "from" : "title_ratings",
+                    # "localField" :"tconst",
+                    # "foreignField": "tconst",
+                    "let":{"vote":"numVotes"},
+                    "pipeline":
+            [
+                {"$match": 
+                    {"numVotes": {"$gte": minVoteCount}
+                       # "expr": {"$gte": [, "$minVoteCount"]}
+                    } },
+                {
+                     "$project":  
+                    {
+                    "_id": 0,
+                    }
+                }
+            ],
+                    "as" : "voteAndRating"
+            }
+                # "project":  
+                # {
+                #     "_id": 0,
+                #     "numVotes": 1, 
+                #     "tconst": 1,
+                #     "primaryTitle": 1,
+                #  },
+                  
+        }
+    ]
+    
+    #aggResult2 = title_basic_collection.aggregate(pipeline1)
+    aggResult = title_basic_collection.aggregate(pipeline)
+    count = 0
+    # for res in aggResult2:
+    #     print(res)
+    #     count+=1
+    #     if count == 3:
+    #         break
+            
+    count = 0     
+    for res in aggResult:
+        print(res)
+        count+=1
+        if count == 3:
+            break
+    #genreList = title_basic_collection.find_one({'genres': genre})
+   # print(genreList)
+    
+    
+
+    
+
+
+
 
 
 
@@ -193,7 +326,8 @@ def addMovie(client):
 
     Input: client - pymongo client to be processed
     """
-    #TODO
+    
+
     pass
 
 
