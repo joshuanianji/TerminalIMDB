@@ -1,7 +1,6 @@
 from re import L
 from pymongo import MongoClient, TEXT
 from getpass import getpass
-from tabulate import tabulate
 import os
 from colorama import Fore, Back, Style
 import colorama
