@@ -1,6 +1,7 @@
 from re import L
 from pymongo import MongoClient, TEXT
 from getpass import getpass
+from tabulate import tabulate
 import os
 from colorama import Fore, Back, Style
 import colorama
@@ -194,14 +195,6 @@ def searchGenre(client):
             break
 
 
-
-
-
-
-
-
-        
-
     pipeline = [
             { "$unwind": "$genres"},
         {"$match": 
@@ -236,9 +229,24 @@ def searchGenre(client):
             {
                 "voteAndRating.averageRating":-1
             }
+        },
+     
+        {"$project":
+            {
+                "_id": 0,
+                "voteAndRating.numVotes": 1,
+                "voteAndRating.averageRating": 1,
+                "primaryTitle": 1
+            }
         }
            
             ]
+    options = {
+                "cursor": 
+                {
+                    "batchSize": 5
+                }
+    }
     #{"$gte": minVoteCount}
 
 
@@ -276,21 +284,49 @@ def searchGenre(client):
         }
     ]
     
-    #aggResult2 = title_basic_collection.aggregate(pipeline1)
+    #aggResult2 = title_basic_collection.aggregate(pipelinfrome1)
     aggResult = title_basic_collection.aggregate(pipeline)
+
+
     count = 0
     # for res in aggResult2:
     #     print(res)
     #     count+=1
     #     if count == 3:
     #         break
+    
+    if aggResult:
+        os.system('cls' if os.name == 'nt' else 'clear')
+        #print(tabulate(aggResult, headers="keys"))
+        titleHeader, averageRatHeader, numVotes = "Title ", "AR", "Votes"
+        
+        print(f"|{titleHeader: <70} | {averageRatHeader: <4} | {numVotes:}")
+        userChoice = True
+        start = 0
+        while userChoice:
+            start = 0
+            for res in aggResult:
+                start += 1
+                if start > 100:
+                    print('breaking...')
+                    break
+                print(f"|{res['primaryTitle']: <70} | {res['voteAndRating']['averageRating']: <4} | {res['voteAndRating']['numVotes']}") 
+            else:
+                userChoice = False   
+            if userChoice == True: 
+                choice = input("press Y/y (or anything else for negative) if you want to see more results\n")
+                if choice.lower() != 'y':
+                    userChoice = False
+
+    else:
+        print("No Movie Title found, you can try to search again\n")
             
-    count = 0     
-    for res in aggResult:
-        print(res)
-        count+=1
-        if count == 3:
-            break
+    # count = 0     
+    # for res in aggResult:
+    #     print(res)
+    #     count+=1
+    #     if count == 3:
+    #         break
     #genreList = title_basic_collection.find_one({'genres': genre})
    # print(genreList)
     
