@@ -63,7 +63,7 @@ def tsv2json(input_file,output_file):
     print('\n' + 'Converting ' + Fore.CYAN + input_file + Fore.RESET + ' to ' + Fore.GREEN + output_file + Fore.RESET +'...' )
 
     arr = []
-    file = open(input_file, 'r')
+    file = open(input_file, 'r', encoding='utf8')
     a = file.readline()
 
     # The first line consist of headings of the record 
