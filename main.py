@@ -293,7 +293,7 @@ def searchGenre(client):
             start = 0
             for res in aggResult:
                 start += 1
-                if start > 100:
+                if start > 120:
                     break
                 print(f"|{res['primaryTitle']: <70} | {res['voteAndRating']['averageRating']: <4} | {res['voteAndRating']['numVotes']}") 
             else:
