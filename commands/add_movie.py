@@ -62,7 +62,7 @@ def add_movie_individual(client: MongoClient):
         'endYear': None
     }
     title_basic_col.insert_one(jsonQuery)
-    title_basic_col.create_index('tconst')
+    #title_basic_col.create_index('tconst')
 
     print(f'{Fore.GREEN}Movie {title} added successfully!{Fore.RESET}')
 
