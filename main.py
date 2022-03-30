@@ -335,7 +335,7 @@ def searchCast(client):
 
     db = client["291db"]
     nameBasicsColl = db["name_basics"]
-    titlePrincipalsColl = db["title_principlals"]
+    titlePrincipalsColl = db["title_principals"]
 
     foundName = False
     while not foundName:
@@ -404,7 +404,7 @@ def searchCast(client):
 
         for person in cursor:
 
-            print('\n\n')
+            print('#'*100+'\n')
             nameID = person["nconst"]
             name = person["primaryName"]
             professions = person["primaryProfession"]
@@ -419,81 +419,65 @@ def searchCast(client):
                     # Find all the instances of the movie person in title_principals
                     {
                         "$match": {
-                            "nconst": 'nm0003044'
+                            "nconst": nameID
                         }
-                    }#,
-                    # # Find the title of the movie mentioned in that instance
-                    # {
-                    #     "$lookup": {
-                    #         "from": 'title_basics',
-                    #         "localField": 'tconst',
-                    #         "foreignField": 'tconst',
-                    #         "as": 'movie'
-                    #     }
-                    # },
-                    # # Extract characters from array
-                    # {
-                    #     "$unwind": {
-                    #         "path": "$characters",
-                    #         "preserveNullAndEmptyArrays": True
-                    #     }
-                    # },
-                    # # Extract role as an object, from an array
-                    # {
-                    #     "$unwind": {
-                    #         "path": "$movie",
-                    #         "preserveNullAndEmptyArrays": True
-                    #     }
-                    # },
-                    # # Filter out all the unnecesary columns
-                    # {
-                    #     "$project": {
-                    #         "tconst":1,
-                    #         "job": 1,
-                    #         "characters":1,
-                    #         "movie.primaryTitle":1
-                    #     }
-                    # }
+                    },
+                    # Find the title of the movie mentioned in that instance
+                    {
+                        "$lookup": {
+                            "from": 'title_basics',
+                            "localField": 'tconst',
+                            "foreignField": 'tconst',
+                            "as": 'movie'
+                        }
+                    },
+                    # Extract characters from array
+                    {
+                        "$unwind": {
+                            "path": "$characters",
+                            "preserveNullAndEmptyArrays": True
+                        }
+                    },
+                    # Extract role as an object, from an array
+                    {
+                        "$unwind": {
+                            "path": "$movie",
+                            "preserveNullAndEmptyArrays": True
+                        }
+                    },
+                    # Filter out all the unnecesary columns
+                    {
+                        "$project": {
+                            "tconst":1,
+                            "job": 1,
+                            "characters":1,
+                            "movie.primaryTitle":1
+                        }
+                    }
                 ]
             )
-
+            print('-'*100)
             for item in titlesCursor:
-                print(item)
+                titleID = item["tconst"]
+                job = item["job"]
+                char = item["characters"]
+                primaryTitle = item["movie"]["primaryTitle"]
 
-            # for item in titlesCursor:
-            #     titleID = item["tconst"]
-            #     job = item["job"]
-            #     char = item["characters"]
-            #     primaryTitle = item["movie"]["primaryTitle"]
-            #     print(f"Played {char} ({job}) in {primaryTitle} ({titleID})")
+                # Played {char} ({job}) in {primaryTitle} ({titleID})
+                if char:
+                    outStr = f"Played {char} "
+                    if job:
+                        outStr += f"({job}) in" 
 
-            # input("Press Enter to see results for the next person.")
+                else:
+                    outStr = "Worked on "
+                
+                outStr += f"{primaryTitle} ({titleID})"
+                print(outStr)
 
+                input("Press Enter to see more results.")
             
-            
-
-
-
-
-
-
-
-
-
-
-
-
-            # if continuePerson:
-            #     invInp = True
-            #     while invInp:
-            #         tryAgain = input("Would you like to see results for the next person (Y/N)? ").lower()
-            #         if tryAgain in ['y', 'n']:
-            #             invInp = False
-            #         else:
-            #             print("Invalid input. Please try again.")
-
-            #     if tryAgain == 'n':
-            #         return
+            input("No more results found, press Enter to return to the main menu")
 
 
 
