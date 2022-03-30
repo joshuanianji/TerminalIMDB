@@ -76,17 +76,15 @@ def tsv2json(input_file,output_file):
     file_length = len(file.readlines())
     file.seek(pos)
 
-    pbar = tqdm(total=file_length)
+    # pbar = tqdm(total=file_length)
 
     for line in file:
         d = {}
         for t, f in zip(titles, line.split('\t')):
 
-           
-
             NestTitles = ['primaryProfession', 'knownForTitles', 'genres', 'characters']
             #integer titles
-            if t == "numVotes" or t == "ordering" or t == "birthYear" or t == "deathYear" or t == "startYear" or t == "endYear" or t == 'runtimeMinutes':
+            if t == "numVotes" or t == "ordering" or t == "birthYear" or t == "deathYear" or t == "endYear" or t == 'runtimeMinutes':
                 temp = f.strip()
                 if temp != '\\N':
                     d[t] = int(temp)
@@ -119,8 +117,8 @@ def tsv2json(input_file,output_file):
 
         # we will use strip to remove '\n'.
         arr.append(d)
-        pbar.update()
-    pbar.close()
+        # pbar.update()
+    # pbar.close()
 
     # we will append all the individual dictionaires into list 
     # and dump into file.

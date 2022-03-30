@@ -1,18 +1,17 @@
-from InquirerPy import prompt
+import util
+from pymongo import MongoClient
+from pymongo.collection import Collection
+from InquirerPy import inquirer
 from colorama import Fore
+from InquirerPy.validator import EmptyInputValidator
+from prompt_toolkit.validation import Validator, ValidationError
 
-def get_valid_inquiry(questions):
-    '''
-    Get a valid inquiry from the user
 
-    If the user presses Ctrl+c, exit the program
-
-    Return:
-        answers: dictionary of answers
-    '''
-    while True:
+def search_cast_crew(client: MongoClient):
+    wantToSearch = True
+    while wantToSearch:
         try:
-            return prompt(questions)
+            wantToSearch = search_cast_crew_individual(client)
         except KeyboardInterrupt:
             print(f'{Fore.YELLOW}Escape pressed. Exiting...{Fore.RESET}')
             exit()
@@ -20,51 +19,47 @@ def get_valid_inquiry(questions):
             print(f'{Fore.RED}Unknown exception occurred while reading prompt, please retry:{Fore.RESET}\n{e}')
             continue
 
-
-
-def search_cast_crew(client):
-    wantToSearch = True
-    while wantToSearch:
-        wantToSearch = searchCast(client)
+    util.text_with_loading(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}', 1)
     return
 
 
-def searchCast(client):
-    """
+def search_cast_crew_individual(client: MongoClient):
+    '''
     Search for cast/crew members:
         > The user should be able to provide a cast/crew member name and see all professions of the member and for each title the member had 
             a job, the primary title, the job and character (if any). 
         > Matching of the member name should be case-insensitive.
 
     Input: client - pymongo client to be processed
-    """
 
-    db = client["291db"]
-    nameBasicsColl = db["name_basics"]
-    titlePrincipalsColl = db["title_principals"]
+    Return: true if the user wants to continue adding movies, false if they want to exit to the main menu
+    '''
 
-    personSep = '-'
+    db = client['291db']
+    nameBasicsColl = db['name_basics']
+    titlePrincipalsColl = db['title_principals']
 
-    print()
-    crewName = input("Enter the cast/crew name: ").lower()
-    if crewName == 'exit' or crewName == 'e':
-        return False
+    personSep = '#'
+    roleSep = '-'
+
+    crew_name = util.prompt_nonempty_string('Crew member name:')
+    if crew_name is None: return False
 
     cursor = nameBasicsColl.aggregate(
         [
             {
-                "$match":{
-                    "primaryName":{
-                        "$regex": crewName,
-                        "$options": "i"
+                '$match':{
+                    'primaryName':{
+                        '$regex': crew_name,
+                        '$options': 'i'
                     }
                 }
             },
             {
-                "$project":{
-                    "nconst":1,
-                    "primaryName":1,
-                    "primaryProfession":1
+                '$project':{
+                    'nconst': 1,
+                    'primaryName': 1,
+                    'primaryProfession': 1
                 }
             }
         ]
@@ -72,13 +67,13 @@ def searchCast(client):
 
     enterLoop = False
     for person in cursor:
-        print('\n'+personSep*100+'\n')
-        nameID = person["nconst"]
-        name = person["primaryName"]
-        professions = person["primaryProfession"]
+        print('\n\n'+personSep*100+'\n')
+        nameID = person['nconst']
+        name = person['primaryName']
+        professions = person['primaryProfession']
 
-        print(Fore.GREEN + f"Data for movie person: "+ Fore.RESET + f" {name} ({nameID})")
-        print(Fore.GREEN +"Professions: " + Fore.RESET, end='')
+        print(f'Data for movie person: {name} ({nameID})')
+        print('Professions: ', end='')
         print(*professions, sep=', ')
 
         # Find all the titles the movie person has participated in 
@@ -86,124 +81,90 @@ def searchCast(client):
             [
                 # Find all the instances of the movie person in title_principals
                 {
-                    "$match": {
-                        "nconst": nameID
+                    '$match': {
+                        'nconst': nameID
                     }
                 },
                 # Find the title of the movie mentioned in that instance
                 {
-                    "$lookup": {
-                        "from": 'title_basics',
-                        "localField": 'tconst',
-                        "foreignField": 'tconst',
-                        "as": 'movie'
+                    '$lookup': {
+                        'from': 'title_basics',
+                        'localField': 'tconst',
+                        'foreignField': 'tconst',
+                        'as': 'movie'
                     }
                 },
                 # Extract characters from array
                 {
-                    "$unwind": {
-                        "path": "$characters",
-                        "preserveNullAndEmptyArrays": True
+                    '$unwind': {
+                        'path': '$characters',
+                        'preserveNullAndEmptyArrays': True
                     }
                 },
                 # Extract role as an object, from an array
                 {
-                    "$unwind": {
-                        "path": "$movie",
-                        "preserveNullAndEmptyArrays": True
+                    '$unwind': {
+                        'path': '$movie',
+                        'preserveNullAndEmptyArrays': True
                     }
                 }
             ]
         )
-        
-        print(Fore.GREEN + "Appearances:" + Fore.RESET)
-        i=0 #################
+        print(roleSep*100)
         for item in titlesCursor:
-            i+=1
-            titleID = item["tconst"]
-            job = item["job"]
-            char = item["characters"]
-            primaryTitle = item["movie"]["primaryTitle"]
+            titleID = item['tconst']
+            job = item['job']
+            char = item['characters']
+            primaryTitle = item['movie']['primaryTitle']
 
             # Played {char} ({job}) in {primaryTitle} ({titleID})
-            outStr = '  • '
-            outStr = f'  {i:>4}) ' #################
             if char:
-                outStr += f"Played '{char}' "
+                outStr = f'Played "{char}" '
                 if job:
-                    outStr += f"({job}) in "
+                    outStr += f'({job}) in '
                 else:
-                        outStr += f"in "
+                        outStr += f'in '
             else:
-                outStr += "Worked on "
+                outStr = 'Worked on '
             
             if primaryTitle:
-                outStr += f"'{primaryTitle}' ({titleID})"
+                outStr += f'"{primaryTitle}" ({titleID})'
             else:
-                outStr += f" the movie with ID {titleID} (Title unknown)"
+                outStr += f' the movie with ID {titleID} (Title unknown)'
 
             print(outStr)
             enterLoop = True
-
-        print()
-        choices = [
-            { 'value': 'y', 'name': 'More results' },
-            { 'value': 'n', 'name': 'Return to main menu' }
-        ]
-        raw_cmd = get_valid_inquiry([{
-                'type': 'list',
-                'name': 'choice',
-                'message': 'Would you like to see more results? ',
-                'choices': choices
-            }])
-        command = raw_cmd['choice']
-
-        print ("\033[A                                          \033[A")
-        print ("\033[A                                          \033[A")
         
-        if command == 'n':
+        choices = ['More Results', 'Back to Main Menu']
+        answers = util.get_valid_inquiry([{
+            'type': 'list',
+            'name': 'choice',
+            'message': 'What would you like to do now? (Arrow keys and enter to select)',
+            'choices': choices
+        }])
+
+        if answers['choice'] == 'More Results':
+            continue 
+        else:
             cursor.close()
             titlesCursor.close()
             return False
 
-
-
-    separator = '\n' + personSep*100
-
     if enterLoop:
-        tmpStr = "\n\nNo "
+        tmpStr = '\n' + personSep*100 + '\nNo '
     else:
-        tmpStr = "\nNo "
+        tmpStr = '\nNo '
     if enterLoop:
-        tmpStr += "more "
-    tmpStr += "results found.\n"
+        tmpStr += 'more '
+    tmpStr += 'results found, What would you like to do?'
 
-    if enterLoop:
-        finalStr = separator + Fore.RED + tmpStr + Fore.RESET
-    else:
-        finalStr = Fore.RED + tmpStr + Fore.RESET
-    print(finalStr)
-    print(personSep*100+'\n')
+    print('\n') # Add a newline to make it look nicer
+    choices = ['Search Again', 'Back to Main Menu']
+    answers = util.get_valid_inquiry([{
+        'type': 'list',
+        'name': 'choice',
+        'message': tmpStr,
+        'choices': choices
+    }])
 
-
-
-
-
-
-
-    choices = [
-        { 'value': 'y', 'name': 'Yes' },
-        { 'value': 'n', 'name': 'No' }
-    ]
-    raw_cmd = get_valid_inquiry([{
-            'type': 'list',
-            'name': 'choice',
-            'message': 'Would you like to make another search? ',
-            'choices': choices
-        }])
-    command = raw_cmd['choice']
-
-    return command == 'y'
-
-
-
+    return answers['choice'] == 'Search Again'
