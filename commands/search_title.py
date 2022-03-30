@@ -272,9 +272,9 @@ def showRating(rating: Union[Any, None]) -> str:
     if rating is None or rating["averageRating"] is None:
         return 'N/A'
     elif rating["averageRating"] > 7.5:
-        return f'{Fore.GREEN}{rating}{Fore.RESET}'
+        return f'{Fore.GREEN}{rating["averageRating"]}{Fore.RESET}'
     elif rating["averageRating"] > 5.0:
-        return f'{Fore.YELLOW}{rating}{Fore.RESET}'
+        return f'{Fore.YELLOW}{rating["averageRating"]}{Fore.RESET}'
     else:
-        return f'{Fore.RED}{rating}{Fore.RESET}'
+        return f'{Fore.RED}{rating["averageRating"]}{Fore.RESET}'
 
