@@ -1,19 +1,19 @@
 from typing import List
-from colorama import Fore, Back, Style
+from colorama import Fore
 import util
 from pymongo.mongo_client import MongoClient
-from pprint import pprint
+from tabulate import tabulate
 
-def search_title(client: MongoClient, commands):
+def search_title(client: MongoClient):
     '''
     Searches titles until the user exits.
     '''
     while True:
-        user_exit = search_title_individual(client, commands)
+        user_exit = search_title_individual(client)
         if user_exit:
             return
 
-def search_title_individual(client: MongoClient, commands) -> bool:
+def search_title_individual(client: MongoClient) -> bool:
     """
     Performs an individual search of the titles.
     Search for titles: 
@@ -25,17 +25,15 @@ def search_title_individual(client: MongoClient, commands) -> bool:
     
     Input: 
         client - pymongo client to be processed
-        commands: the command dictionary
     
     Returns:
         user_exit: true if the user wants to exit back to main page, false if the user wants to continue searching
     """
-    color = commands['ST']['color']
-    print(f'{color}Please enter in your keywords (space separated), or "BACK" to exit{Fore.RESET}')
+    print(f'{Fore.CYAN}Please enter in your keywords (space separated), or "EXIT/E" to exit{Fore.RESET}')
     keywords = util.get_valid_input('> ', lambda cmd: cmd.strip() != '', 'Please do not enter an empty string!', True).split()
     
-    if keywords[0] == 'BACK':
-        print(f'{color}Returning to main menu...{Fore.RESET}')
+    if keywords[0] == 'EXIT' or keywords[0] == 'E':
+        print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
         return True 
     else:
         and_queries = []
@@ -57,10 +55,9 @@ def search_title_individual(client: MongoClient, commands) -> bool:
         }
         db = client['291db']
         collection = db['title_basics']
-        titles = collection.find(query, { 'primaryTitle': 1, 'tconst': 1 }) # project primary_title
-        titles_list = [title for title in titles] # turn a cursor into a concrete list.
+        title_count = collection.count_documents(query)
 
-        if len(titles_list) == 0:
+        if title_count == 0:
             choices = ['Search Again', 'Back to Main Menu']
             answers = util.get_valid_inquiry([{
                 'type': 'list',
@@ -74,23 +71,38 @@ def search_title_individual(client: MongoClient, commands) -> bool:
                 return True
 
         else:
-            print(f'Found {Fore.GREEN}{len(titles_list)}{Fore.RESET} titles. Please select one to see more information.')
-            choices = get_movies_display_list(titles_list)
-            other_choices = ['Search Again', 'Back to Main Menu']
-            answers = util.get_valid_inquiry([{
-                'type': 'list',
-                'name': 'choice',
-                'message': 'Arrow keys and enter to select',
-                'choices': choices + other_choices
-            }])
-            if answers['choice'] == 'Search Again':
-                return False
-            elif answers['choice'] == 'Back to Main Menu':
-                return True
-            else:
-                # here, answers['choice'] will be the ID of the movie (tconst)
-                user_choice = show_movie_info(client, answers['choice'])
-                return user_choice
+            print(f'Found {Fore.GREEN}{title_count}{Fore.RESET} titles. Select one for more info, or go to bottom for other options. \n')
+            start_index = 0
+            while True:
+                titles = list(collection.find(query).limit(50).skip(start_index)) # turn the cursor into a concrete list.
+
+                headers, choices = get_movies_display_list(titles)
+
+                # Miscellaneous other choices
+                other_choices = ['Search Again', 'Back to Main Menu']
+
+                if len(titles) >= 50:
+                    print(f'{Fore.YELLOW}There may be more titles below.\n{Fore.RESET}')
+                    other_choices.append('See More Titles')
+
+                print(f'{Fore.CYAN}{headers}{Fore.RESET}')
+                answers = util.get_valid_inquiry([{
+                    'type': 'list',
+                    'name': 'choice',
+                    'message': 'Arrow keys and enter to select',
+                    'choices': other_choices + choices
+                }])
+                if answers['choice'] == 'Search Again':
+                    return False
+                elif answers['choice'] == 'Back to Main Menu':
+                    return True
+                elif answers['choice'] == 'See More Titles':
+                    start_index += 50
+                    continue
+                else:
+                    # here, answers['choice'] will be the ID of the movie (tconst)
+                    user_choice = show_movie_info(client, answers['choice'])
+                    return user_choice
 
 def get_movies_display_list(titles: List[dict]) -> List[str]:
     """
@@ -99,13 +111,37 @@ def get_movies_display_list(titles: List[dict]) -> List[str]:
     Input: 
         titles - the list of titles to display
     """
-    display_list = []
+
+    tabulates = []
+    ids = []
     for title in titles:
+        tconst = title['tconst']
+        primary_title = title['primaryTitle']
+        original_title = title['originalTitle']
+        title_type = title['titleType']
+        isAdult = title['isAdult']
+        start_year = title['startYear']
+        end_year = title['endYear']
+        runtime_minutes = title['runtimeMinutes']
+        genres = ', '.join(title['genres'])
+        data = [tconst, primary_title, original_title, title_type, isAdult, start_year, end_year, runtime_minutes, genres]
+        tabulates.append(data)
+        ids.append(tconst)
+
+
+    tabulated = tabulate(tabulates, headers=['tconst', 'Primary Title', 'OG Title', 'Type', 'Adult', 'Start Year', 'End Year', 'Runtime', 'Genres']).split('\n')
+    headers = '  ' + tabulated[0]
+    
+    tabulate_str = tabulated[2:] # now, every element is equally spaced. 
+    display_list = []
+
+    for elem, id in zip(tabulate_str, ids):
         display_list.append({
-            'name': title['primaryTitle'] + '\n\t' + title['tconst'],
-            'value': title['tconst']
+            'name': elem,
+            'value': id
         })
-    return display_list
+
+    return headers, display_list
 
 
 def show_movie_info(client: MongoClient, movie_id: str):
