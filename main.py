@@ -94,9 +94,6 @@ def mainMenu(client):
             reset_screen()
             print('Searching for a title...')
             search_title(client, commands)
-            # Remove after implementing exit commands in searchTitle()
-            print("Press Enter to return to the main menu.")
-            getpass(prompt="")
 
         elif command == 'SG':
             reset_screen()
