@@ -115,6 +115,6 @@ def get_valid_inquiry(questions):
     while True:
         answers = prompt(questions)
         if answers == {}:
-            print('Please select a correct option (no mouse presses!)')
+            print('Please enter a correct option (no mouse presses!)')
         else:
             return answers
