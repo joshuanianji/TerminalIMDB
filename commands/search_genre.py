@@ -102,6 +102,6 @@ def search_genre(client):
     if noResult:
         print("No Movie Title found, you can try to search again\n")
 
-    print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
+    input(f'{Fore.CYAN}Press Enter to return to the main menu.{Fore.RESET}')
     return True
 
