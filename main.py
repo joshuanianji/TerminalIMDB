@@ -1,5 +1,4 @@
 from pymongo import MongoClient
-from getpass import getpass
 import os
 from colorama import Fore
 import colorama

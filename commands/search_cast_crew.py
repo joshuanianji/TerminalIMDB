@@ -39,9 +39,8 @@ def search_cast_crew_individual(client: MongoClient):
     personSep = '-'
 
     print()
-    crewName = input("Enter the cast/crew name: ").lower()
-    if crewName == 'exit' or crewName == 'e':
-        return False
+    crewName = util.prompt_nonempty_string('Crew member name:')
+    if crewName is None: return False
 
     cursor = nameBasicsColl.aggregate(
         [
