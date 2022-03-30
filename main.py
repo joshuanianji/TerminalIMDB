@@ -334,155 +334,117 @@ def searchCast(client):
     nameBasicsColl = db["name_basics"]
     titlePrincipalsColl = db["title_principals"]
 
-    foundName = False
-    while not foundName:
-        crewName = input("Enter the cast/crew name: ").lower()
-        if crewName == 'exit' or crewName == 'e':
-            return
+    personSep = '#'
+    roleSep = '-'
 
-        cursor = nameBasicsColl.aggregate(
+    crewName = input("Enter the cast/crew name: ").lower()
+    if crewName == 'exit' or crewName == 'e':
+        return
+
+    cursor = nameBasicsColl.aggregate(
+        [
+            {
+                "$match":{
+                    "primaryName":{
+                        "$regex": crewName,
+                        "$options": "i"
+                    }
+                }
+            },
+            {
+                "$project":{
+                    "nconst":1,
+                    "primaryName":1,
+                    "primaryProfession":1
+                }
+            }
+        ]
+    )
+
+    enterLoop = False
+    for person in cursor:
+        print('\n\n'+personSep*100+'\n')
+        nameID = person["nconst"]
+        name = person["primaryName"]
+        professions = person["primaryProfession"]
+
+        print(f"Data for movie person: {name} ({nameID})")
+        print("Professions: ", end='')
+        print(*professions, sep=', ')
+
+        # Find all the titles the movie person has participated in 
+        titlesCursor = titlePrincipalsColl.aggregate(
             [
+                # Find all the instances of the movie person in title_principals
                 {
-                    "$match":{
-                        "primaryName":{
-                            "$regex": crewName,
-                            "$options": "i"
-                        }
+                    "$match": {
+                        "nconst": nameID
                     }
                 },
+                # Find the title of the movie mentioned in that instance
                 {
-                    "$project":{
-                        "nconst":1,
-                        "primaryName":1,
-                        "primaryProfession":1
+                    "$lookup": {
+                        "from": 'title_basics',
+                        "localField": 'tconst',
+                        "foreignField": 'tconst',
+                        "as": 'movie'
+                    }
+                },
+                # Extract characters from array
+                {
+                    "$unwind": {
+                        "path": "$characters",
+                        "preserveNullAndEmptyArrays": True
+                    }
+                },
+                # Extract role as an object, from an array
+                {
+                    "$unwind": {
+                        "path": "$movie",
+                        "preserveNullAndEmptyArrays": True
                     }
                 }
             ]
         )
+        print(roleSep*100)
+        for item in titlesCursor:
+            titleID = item["tconst"]
+            job = item["job"]
+            char = item["characters"]
+            primaryTitle = item["movie"]["primaryTitle"]
 
-
-        if cursor:
-            foundName = True
-        else:
-            print("No results with that name.")
-            invalidInput = True
-            while invalidInput:
-                tryAgain = input("Would you like to try searching again (Y/N)? ").lower()
-                if tryAgain in ['y', 'n']:
-                    invalidInput = False
+            # Played {char} ({job}) in {primaryTitle} ({titleID})
+            if char:
+                outStr = f"Played '{char}' "
+                if job:
+                    outStr += f"({job}) in "
                 else:
-                    print("Invalid input. Please try again.")
-
-            if tryAgain == 'n':
-                return
+                        outStr += f"in "
             else:
-                continue
-
-
-
-        # userChoice = True
-        # while userChoice:
-        #     start = 0
-        #     for res in cursor:
-        #         start += 1
-        #         if start > 120:
-        #             break
-        #         print(f"|{res['primaryTitle']: <70} | {res['voteAndRating']['averageRating']: <4} | {res['voteAndRating']['numVotes']}") 
-        #     else:
-        #         userChoice = False   
-        #     if userChoice == True: 
-        #         choice = input("press Y/y (or anything else for negative) if you want to see more results\n")
-        #         if choice.lower() != 'y':
-        #             userChoice = False
-
-
-
-
-
-        for person in cursor:
-
-            personSep = '#'
-            roleSep = '-'
-
-            print('\n\n'+personSep*100+'\n')
-            nameID = person["nconst"]
-            name = person["primaryName"]
-            professions = person["primaryProfession"]
-
-            print(f"Data for movie person: {name} ({nameID})")
-            print("Professions: ", end='')
-            print(*professions, sep=', ')
-
-            # Find all the titles the movie person has participated in 
-            titlesCursor = titlePrincipalsColl.aggregate(
-                [
-                    # Find all the instances of the movie person in title_principals
-                    {
-                        "$match": {
-                            "nconst": nameID
-                        }
-                    },
-                    # Find the title of the movie mentioned in that instance
-                    {
-                        "$lookup": {
-                            "from": 'title_basics',
-                            "localField": 'tconst',
-                            "foreignField": 'tconst',
-                            "as": 'movie'
-                        }
-                    },
-                    # Extract characters from array
-                    {
-                        "$unwind": {
-                            "path": "$characters",
-                            "preserveNullAndEmptyArrays": True
-                        }
-                    },
-                    # Extract role as an object, from an array
-                    {
-                        "$unwind": {
-                            "path": "$movie",
-                            "preserveNullAndEmptyArrays": True
-                        }
-                    },
-                    # Filter out all the unnecesary columns
-                    {
-                        "$project": {
-                            "tconst":1,
-                            "job": 1,
-                            "characters":1,
-                            "movie.primaryTitle":1
-                        }
-                    }
-                ]
-            )
-            print(roleSep*100)
-            for item in titlesCursor:
-                titleID = item["tconst"]
-                job = item["job"]
-                char = item["characters"]
-                primaryTitle = item["movie"]["primaryTitle"]
-
-                # Played {char} ({job}) in {primaryTitle} ({titleID})
-                if char:
-                    outStr = f"Played '{char}' "
-                    if job:
-                        outStr += f"({job}) in "
-                    else:
-                         outStr += f"in "
-                else:
-                    outStr = "Worked on "
-                
-                if primaryTitle:
-                    outStr += f"'{primaryTitle}' ({titleID})"
-                else:
-                    outStr += f" the movie with ID {titleID} (Title unknown)"
-
-                print(outStr)
-
-            input("\nPress Enter to see more results.")
+                outStr = "Worked on "
             
-        input('\n' + personSep*100 + "\nNo more results found, press Enter to return to the main menu")
+            if primaryTitle:
+                outStr += f"'{primaryTitle}' ({titleID})"
+            else:
+                outStr += f" the movie with ID {titleID} (Title unknown)"
+
+            print(outStr)
+            enterLoop = True
+
+        leave = input("\nPress Enter to see more results (or enter exit to return to the main menu): ").lower()
+        if leave == 'exit':
+            cursor.close()
+            titlesCursor.close()
+            return
+        
+    if enterLoop:
+        tmpStr = '\n' + personSep*100 + "\nNo "
+    else:
+        tmpStr = "\nNo "
+    if enterLoop:
+        tmpStr += "more "
+    tmpStr += "results found, press Enter to return to the main menu."
+    input(tmpStr)
 
 
 
