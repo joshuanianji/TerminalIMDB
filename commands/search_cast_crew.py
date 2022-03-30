@@ -137,7 +137,7 @@ def searchCast(client):
                 else:
                         outStr += f"in "
             else:
-                outStr = "Worked on "
+                outStr += "Worked on "
             
             if primaryTitle:
                 outStr += f"'{primaryTitle}' ({titleID})"
