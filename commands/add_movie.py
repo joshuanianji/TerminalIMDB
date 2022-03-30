@@ -3,6 +3,7 @@ import time
 from colorama import Fore
 from InquirerPy import inquirer
 from pymongo import MongoClient
+from pprint import pprint
 from pymongo.collection import Collection
 
 
@@ -65,7 +66,7 @@ def add_movie_individual(client: MongoClient):
     }
     title_basic_col.insert_one(jsonQuery)
     #title_basic_col.create_index('tconst')
-
+    pprint(jsonQuery)
     print(f'{Fore.GREEN}Movie {title} added successfully!{Fore.RESET}')
 
     choices = ['Add another', 'Back to Main Menu']

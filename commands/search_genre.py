@@ -96,20 +96,21 @@ def search_genre_individual(client: MongoClient):
     aggResult = title_basic_collection.aggregate(pipeline)
 
     if aggResult:
-        titleHeader, averageRatHeader, numVotes = 'Title ', 'AR', 'Votes'
+        NumHeader,titleHeader, averageRatHeader, numVotes = "No.", 'Title ', 'AR', 'Votes'
         
-        print(f'|{titleHeader: <75} | {averageRatHeader: <4} | {numVotes:}')
+        print(f'{NumHeader:>4}|{titleHeader: <75} | {averageRatHeader: <4} | {numVotes:}')
         print('-'*94)
         userChoice = True
         start = 0
+        
         noResult = True
         while userChoice:
-            start = 0
+            end = start + 100
             for res in aggResult:
                 start += 1
                 noResult = False
-                print(f'|{res["primaryTitle"]: <75} | {res["voteAndRating"]["averageRating"]: <4} | {res["voteAndRating"]["numVotes"]}') 
-                if start > 100:
+                print(f'{start:>4}|{res["primaryTitle"]: <75} | {res["voteAndRating"]["averageRating"]: <4} | {res["voteAndRating"]["numVotes"]}') 
+                if start > end:
                     break
             else:
                 userChoice = False
