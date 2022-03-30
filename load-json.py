@@ -1,11 +1,12 @@
-import json
 import os
-from pymongo import MongoClient
+import json
 import time 
-from colorama import Fore, Style
 import colorama
+from pymongo import MongoClient
+from InquirerPy import inquirer
+from colorama import Fore, Style
 from pymongo.errors import ServerSelectionTimeoutError
-
+from InquirerPy.validator import NumberValidator
 
 
 def starting_text():
@@ -63,10 +64,13 @@ def prog():
     collist = None
     while True:
         try:
-            portNumber = int(input('Please enter the portNumber: '))
-            client = MongoClient(host = 'localhost', port = portNumber, serverSelectionTimeoutMS = 15)
+            portNumber = inquirer.text(
+                message='Please enter the portNumber: ', 
+                validate=NumberValidator()
+            ).execute()
+            client = MongoClient(host = 'localhost', port = int(portNumber), serverSelectionTimeoutMS = 15)
             #create or open the LabH01 database server
-            db = client["291db"]
+            db = client['291db']
             colNames = ['name_basics', 'title_basics', 'title_ratings', 'title_principals']
             collist = db.list_collection_names()
             break
