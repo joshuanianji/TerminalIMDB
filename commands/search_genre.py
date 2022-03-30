@@ -111,25 +111,25 @@ def search_genre_individual(client: MongoClient):
                 if start > 100:
                     break
             else:
-                userChoice = False   
+                userChoice = False
+                if not noResult:
+                    print(f'{Fore.GREEN} No more results to display!')
             if userChoice == True: 
-                choices = ['See more', 'Exit']
+                choices = ['See more', 'leave']
                 answers = util.get_valid_inquiry([{
                     'type': 'list',
                     'name': 'choice',
                     'message': 'What would you like to do now? (Arrow keys and enter to select)',
                     'choices': choices
                 }])
-                print(answers['choice'])
+                #print(answers['choice'])
                 if answers['choice'] == 'See more':
-                    print('Seeing more...')
-                    continue
+                    userChoice = True
                 else:
-                    print('Exiting')
-                    break
+                    userChoice = False
 
     if noResult:
-        print(f'{Fore.RED}No movie tities!\n')
+        print(f'{Fore.RED}No movie titles!\n')
 
     
     choices = [
