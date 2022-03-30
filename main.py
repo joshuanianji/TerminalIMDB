@@ -125,10 +125,6 @@ def addMovie(client):
     """
     db = client['291db']
     title_basic_col = db['title_basics']
-    # res = title_basic_col.find({'primaryTitle': 'AlmerTheMuneer'})
-    # for j in res:
-    #     print(j)
-    #return
     while True:
         unId = util.non_empty_string("Enter a unique id for the movie to be added\n")
         res = title_basic_col.find_one({'tconst': unId})

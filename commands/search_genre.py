@@ -93,7 +93,7 @@ def search_genre_c(client):
     if aggResult:
         titleHeader, averageRatHeader, numVotes = "Title ", "AR", "Votes"
         
-        print(f"|{titleHeader: <70} | {averageRatHeader: <4} | {numVotes:}")
+        print(f"|{titleHeader: <75} | {averageRatHeader: <4} | {numVotes:}")
         userChoice = True
         start = 0
         noResult = True
@@ -102,7 +102,7 @@ def search_genre_c(client):
             for res in aggResult:
                 start += 1
                 noResult = False
-                print(f"|{res['primaryTitle']: <70} | {res['voteAndRating']['averageRating']: <4} | {res['voteAndRating']['numVotes']}") 
+                print(f"|{res['primaryTitle']: <75} | {res['voteAndRating']['averageRating']: <4} | {res['voteAndRating']['numVotes']}") 
                 if start > 100:
                     break
             else:
