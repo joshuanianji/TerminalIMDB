@@ -5,6 +5,9 @@ from pymongo import MongoClient
 
 
 def search_cast_crew(client: MongoClient):
+    '''
+    Runs the search cast function of the program until the user chooses to return to the main menu
+    '''
     wantToSearch = True
     while wantToSearch:
         try:
@@ -125,8 +128,6 @@ def search_cast_crew_individual(client: MongoClient):
                     outStr += f'as {job} on '
                 else:
                     outStr += "on "
-
-            
             if primaryTitle:
                 outStr += f"'{primaryTitle}' ({titleID})"
             else:

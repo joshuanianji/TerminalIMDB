@@ -93,6 +93,10 @@ def mainMenu(client):
 
 
 def reset_screen(welcome_text = None, show_names = False):
+    '''
+    Clears the screen and prints out the 291 MP2 to the screen. 
+    Prints out the main menu options for the user.
+    '''
     os.system('cls' if os.name == 'nt' else 'clear')
     util.starting_text(welcome_text, show_names)
     print('-'*70 + '\n')

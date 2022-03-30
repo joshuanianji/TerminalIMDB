@@ -8,7 +8,7 @@ from pymongo.mongo_client import MongoClient
 
 def search_title(client: MongoClient):
     '''
-    Searches titles until the user exits.
+    Runs the search title function of the program until the user chooses to return to the main menu
     '''
     wantToAdd = True
     while wantToAdd:
