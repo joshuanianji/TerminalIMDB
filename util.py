@@ -1,3 +1,4 @@
+from typing import Union
 from colorama import Fore, Style
 import time
 from InquirerPy import prompt
@@ -87,7 +88,7 @@ def get_valid_input(prompt, is_valid, error_msg='Please enter a valid input.', u
         print(error_msg)
 
 
-def get_valid_int_E(prompt) -> int | bool:
+def get_valid_int_E(prompt):
     user_input = get_valid_input(prompt, lambda x: x.isdigit() or x.upper() == 'EXIT' or x.upper() == 'E')
     if user_input == "Exit" or user_input == "E":
         return False
