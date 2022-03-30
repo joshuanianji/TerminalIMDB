@@ -371,8 +371,8 @@ def addMovie(client):
     #return
     unId = input("Enter a unique id for the movie to be added\n")
     title = input("Enter a title of the movie to be added\n")
-    startYear = util.get_valid_int("Enter the start year \n")
-    runTime = util.get_valid_int("Enter the running time\n")
+    startYear = util.get_valid_int_E("Enter the start year \n")
+    runTime = util.get_valid_int_E("Enter the running time\n")
     genreList = input("Enter the genres seperated by a comma\n").split(',')
     #arr = []
     jsonQuery = dict()
