@@ -1,5 +1,4 @@
 import util
-import time
 from colorama import Fore
 from InquirerPy import inquirer
 from pymongo import MongoClient

@@ -1,7 +1,7 @@
-import util
-from pymongo import MongoClient
-from colorama import Fore
 import re
+import util
+from colorama import Fore
+from pymongo import MongoClient
 
 
 def search_cast_crew(client: MongoClient):
