@@ -1,14 +1,14 @@
-from pymongo import MongoClient
 import os
-from colorama import Fore
-import colorama
 import util
-from pymongo.errors import ServerSelectionTimeoutError
+import colorama
+from colorama import Fore
+from pymongo import MongoClient
+from commands.add_movie import add_movie
+from commands.search_genre import search_genre
 from commands.search_title import search_title
 from commands.add_cast_crew import add_cast_crew
-from commands.search_genre import search_genre
 from commands.search_cast_crew import search_cast_crew
-from commands.add_movie import add_movie
+from pymongo.errors import ServerSelectionTimeoutError
 
 
 def mongoConnect():

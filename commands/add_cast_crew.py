@@ -1,9 +1,9 @@
-from colorama import Fore
 import util
-from pymongo.mongo_client import MongoClient
-from pymongo.collection import Collection
-from InquirerPy import inquirer
 from pprint import pprint
+from colorama import Fore
+from InquirerPy import inquirer
+from pymongo.collection import Collection
+from pymongo.mongo_client import MongoClient
 
 
 def add_cast_crew(client: MongoClient):

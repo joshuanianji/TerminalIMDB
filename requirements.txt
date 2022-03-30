@@ -1,6 +1,5 @@
 altgraph==0.17.2
 colorama==0.4.4
-emoji==1.7.0
 importlib-metadata==4.11.3
 inquirerpy==0.3.3
 macholib==1.16

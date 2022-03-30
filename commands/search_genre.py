@@ -1,6 +1,6 @@
-from colorama import Fore
-import util
 import re
+import util
+from colorama import Fore
 from pymongo.mongo_client import MongoClient
 
 
