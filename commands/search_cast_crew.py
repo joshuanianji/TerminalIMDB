@@ -1,11 +1,5 @@
-from tkinter.ttk import Separator
-import util
 from InquirerPy import prompt
 from colorama import Fore
-
-
-# colors = BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE
-
 
 def get_valid_inquiry(questions):
     '''
@@ -51,9 +45,10 @@ def searchCast(client):
 
     personSep = '-'
 
+    print()
     crewName = input("Enter the cast/crew name: ").lower()
     if crewName == 'exit' or crewName == 'e':
-        return
+        return False
 
     cursor = nameBasicsColl.aggregate(
         [
@@ -122,7 +117,9 @@ def searchCast(client):
         )
         
         print(Fore.GREEN + "Appearances:" + Fore.RESET)
+        i=0 #################
         for item in titlesCursor:
+            i+=1
             titleID = item["tconst"]
             job = item["job"]
             char = item["characters"]
@@ -130,6 +127,7 @@ def searchCast(client):
 
             # Played {char} ({job}) in {primaryTitle} ({titleID})
             outStr = '  • '
+            outStr = f'  {i:>4}) ' #################
             if char:
                 outStr += f"Played '{char}' "
                 if job:
@@ -147,11 +145,26 @@ def searchCast(client):
             print(outStr)
             enterLoop = True
 
-        leave = input("\nPress Enter to see more results (or enter exit to return to the main menu): ").lower()
-        if leave == 'exit':
+        print()
+        choices = [
+            { 'value': 'y', 'name': 'More results' },
+            { 'value': 'n', 'name': 'Return to main menu' }
+        ]
+        raw_cmd = get_valid_inquiry([{
+                'type': 'list',
+                'name': 'choice',
+                'message': 'Would you like to see more results? ',
+                'choices': choices
+            }])
+        command = raw_cmd['choice']
+
+        print ("\033[A                                          \033[A")
+        print ("\033[A                                          \033[A")
+        
+        if command == 'n':
             cursor.close()
             titlesCursor.close()
-            return
+            return False
 
 
 
@@ -170,6 +183,7 @@ def searchCast(client):
     else:
         finalStr = Fore.RED + tmpStr + Fore.RESET
     print(finalStr)
+    print(personSep*100+'\n')
 
 
 
@@ -184,7 +198,7 @@ def searchCast(client):
     raw_cmd = get_valid_inquiry([{
             'type': 'list',
             'name': 'choice',
-            'message': 'Would you like to make another search?',
+            'message': 'Would you like to make another search? ',
             'choices': choices
         }])
     command = raw_cmd['choice']
