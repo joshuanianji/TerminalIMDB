@@ -66,8 +66,9 @@ def add_movie_individual(client: MongoClient):
     }
     title_basic_col.insert_one(jsonQuery)
     #title_basic_col.create_index('tconst')
+    print(f'{Fore.BLUE} Adding Movie {title}... {Fore.RESET}')
     pprint(jsonQuery)
-    print(f'{Fore.GREEN}Movie {title} added successfully!{Fore.RESET}')
+    print(f'{Fore.GREEN}Movie {title} added successfully!{Fore.RESET}\n')
 
     choices = ['Add another', 'Back to Main Menu']
     answers = util.get_valid_inquiry([{
