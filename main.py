@@ -1,14 +1,13 @@
-from re import L
-from typing import NoReturn
-from pymongo import MongoClient, TEXT
+from pymongo import MongoClient
 from getpass import getpass
 import os
-from colorama import Fore, Back, Style
+from colorama import Fore
 import colorama
 import util
 from pymongo.errors import ServerSelectionTimeoutError
-import time
-from commands.search_title import search_title, show_movie_info
+from commands.search_title import search_title
+from commands.add_cast_crew import add_cast_crew
+from commands.search_genre import search_genre
 
 def mongoConnect():
     """
@@ -44,6 +43,7 @@ def mainMenu(client):
     '''
 
     while True:
+        reset_screen()
         choices = [
             { 'value': 'ST', 'name': 'Search for a title' },
             { 'value': 'SG', 'name': 'Search for a genre' },
@@ -67,11 +67,12 @@ def mainMenu(client):
 
         elif command == 'SG':
             print('Searching for a genre...')
-            searchGenre(client)
+            search_genre(client)
             # Remove after implementing exit commands in searchGenre()
             print("Press Enter to return to the main menu.")
             getpass(prompt="")
             reset_screen()
+            search_genre(client)
 
         elif command == 'SC':
             print('Searching for a cast/crew member...')
@@ -87,8 +88,8 @@ def mainMenu(client):
             reset_screen()
 
         elif command == 'AC':
-            print('Adding a new cast/crew member')
-            addCast(client)
+            print('Adding a new cast/crew member...')
+            add_cast_crew(client)
             # Remove after implementing exit commands in addCast()
             print("Press Enter to return to the main menu.")
             getpass(prompt="")
@@ -110,112 +111,41 @@ def reset_screen(welcome_text = None, show_names = False):
     print('-'*70 + '\n')
 
 
-
-
-
-
-def searchGenre(client):
+def addMovie(client):
     """
-    Search for genres: 
-        > The user should be able to provide a genre and a minimum vote count and see all titles under the provided genre 
-            (again case-insensitive match) that have the given number of votes or more. 
-        > The result should be sorted based on the average rating with the highest rating on top.
+    Add a movie: 
+        > The user should be able to add a row to title_basics by providing a unique id, a title, a start year, a running time and a list of genres. 
+        > Both the primary title and the original title will be set to the provided title, the title type is set to movie 
+            and isAdult and endYear are set to Null (denoted as \\N).
 
     Input: client - pymongo client to be processed
     """
-    #TODO
     db = client['291db']
+    title_basic_col = db['title_basics']
+    res = title_basic_col.find({'primaryTitle': 'AlmerTheMuneer'})
+    for j in res:
+        print(j)
+    #return
+    unId = input("Enter a unique id for the movie to be added\n")
+    title = input("Enter a title of the movie to be added\n")
+    startYear = util.get_valid_int_E("Enter the start year \n")
+    runTime = util.get_valid_int_E("Enter the running time\n")
+    genreList = input("Enter the genres seperated by a comma\n").split(',')
+    #arr = []
+    jsonQuery = dict()
+    jsonQuery ['primaryTitle'] = title
+    jsonQuery['originalTitle'] = title
+    jsonQuery['tconst'] = unId
+    jsonQuery['startYear'] = startYear
+    jsonQuery['runtimeMinutes'] = runTime
+    jsonQuery['genres'] = genreList
+    jsonQuery['titleType'] = 'movie'
+    jsonQuery['isAdult'] = None
+    jsonQuery['endYear'] = None
+    #arr.append(jsonQuery)
+    title_basic_col.insert_one(jsonQuery)
 
-    title_basic_collection = db['title_basics']
 
-    genre = input('What genre would you like to watch? ')
-
-
-    while True:
-        try:
-            minVoteCount = int(input('Tell minimum number of votes you would want for the search? '))
-            if minVoteCount < 0:
-                raise ValueError('value needs to be >= 0')
-    
-        except Exception as e:
-                print(e.args)
-        else:
-            break
-
-    
-    pipeline = [
-        { "$unwind": "$genres"},
-        {"$match": 
-            {"genres": 
-                {
-                    '$regex': genre,
-                    '$options': 'i'
-                }
-            }
-        },
-        {"$lookup":
-            {"from" : "title_ratings",
-                "localField" :"tconst",
-                "foreignField": "tconst",
-                "pipeline": [
-                    {"$project":
-                        {
-                            "numVotes": 1,
-                            "averageRating": 1,
-                        }
-                    }
-                ],
-                "as" : "voteAndRating"
-            }
-        },
-        {"$unwind": "$voteAndRating"},
-        {"$match": 
-            {"voteAndRating.numVotes": 
-                {"$gte": minVoteCount}
-            }   
-        },
-        {"$sort":
-            {
-                "voteAndRating.averageRating":-1
-                #"voteAndRating.numVotes": -1
-            }
-        },
-        {"$project":
-            {
-                "_id": 0,
-                "voteAndRating.numVotes": 1,
-                "voteAndRating.averageRating": 1,
-                "primaryTitle": 1
-            }
-        }
-    ]
-
-    aggResult = title_basic_collection.aggregate(pipeline)
-
-    if aggResult:
-        titleHeader, averageRatHeader, numVotes = "Title ", "AR", "Votes"
-        
-        print(f"|{titleHeader: <70} | {averageRatHeader: <4} | {numVotes:}")
-        userChoice = True
-        start = 0
-        noResult = True
-        while userChoice:
-            start = 0
-            for res in aggResult:
-                start += 1
-                noResult = False
-                print(f"|{res['primaryTitle']: <70} | {res['voteAndRating']['averageRating']: <4} | {res['voteAndRating']['numVotes']}") 
-                if start > 100:
-                    break
-            else:
-                userChoice = False   
-            if userChoice == True: 
-                choice = input("press Y/y (or anything else for negative) if you want to see more results\n")
-                if choice.lower() != 'y':
-                    userChoice = False
-
-    if noResult:
-        print("No Movie Title found, you can try to search again\n")
 
 
 def searchCast(client):
@@ -344,40 +274,6 @@ def searchCast(client):
     tmpStr += "results found, press Enter to return to the main menu."
     input(tmpStr)
     return
-
-
-
-def addMovie(client):
-    """
-    Add a movie: 
-        > The user should be able to add a row to title_basics by providing a unique id, a title, a start year, a running time and a list of genres. 
-        > Both the primary title and the original title will be set to the provided title, the title type is set to movie 
-            and isAdult and endYear are set to Null (denoted as \\N).
-
-    Input: client - pymongo client to be processed
-    """
-    
-
-    
-
-
-
-def addCast(client):
-    """
-    Add a cast/crew member: 
-        > The user should be able to add a row to title_principals by providing a cast/crew member id, a title id, and a category. 
-        > The provided title and person ids should exist in name_basics and title_basics respectively (otherwise, proper messages should be given), 
-            the ordering should be set to the largest ordering listed for the title plus one (or 1 if the title is not listed in title_principals) 
-            and any other field that is not provided (including job and characters) set to Null.
-
-    Input: client - pymongo client to be processed
-    """
-    #TODO
-    pass
-
-
-
-
 
 
 
