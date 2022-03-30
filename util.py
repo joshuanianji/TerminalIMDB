@@ -1,4 +1,4 @@
-from colorama import Fore, Back, Style
+from colorama import Fore, Style
 import time
 from InquirerPy import prompt
 
@@ -110,11 +110,18 @@ def get_in_list(prompt, L) -> str:
 def get_valid_inquiry(questions):
     '''
     Get a valid inquiry from the user
-    Sometimes inquiry can fail if the user clicks something
+
+    If the user presses Ctrl+c, exit the program
+
+    Return:
+        answers: dictionary of answers
     '''
     while True:
-        answers = prompt(questions)
-        if answers == {}:
-            print('Please enter a correct option (no mouse presses!)')
-        else:
-            return answers
+        try:
+            return prompt(questions)
+        except KeyboardInterrupt:
+            print(f'{Fore.YELLOW}Escape pressed. Exiting...{Fore.RESET}')
+            exit()
+        except Exception as e:
+            print(f'{Fore.RED}Unknown exception occurred while reading prompt, please retry:{Fore.RESET}\n{e}')
+            continue

@@ -1,4 +1,5 @@
 import json
+import os
 from pymongo import MongoClient
 import time 
 from colorama import Fore, Back, Style
@@ -9,6 +10,7 @@ def starting_text():
     '''
     fancy starting text
     '''
+    os.system('cls' if os.name == 'nt' else 'clear')
     texts = [
         ':::        ::::::::      :::     :::::::::       ::::::::::: ::::::::   ::::::::  ::::    ::: ',
         ':+:       :+:    :+:   :+: :+:   :+:    :+:          :+:    :+:    :+: :+:    :+: :+:+:   :+: ',
