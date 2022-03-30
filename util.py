@@ -1,3 +1,4 @@
+from typing import Union
 from colorama import Fore, Style
 import time
 from InquirerPy import prompt
@@ -97,6 +98,7 @@ def get_valid_int_E(prompt) -> int:
         return False
     else:
         return int(user_input)
+
 
 def get_valid_int(prompt) -> int:
     '''
