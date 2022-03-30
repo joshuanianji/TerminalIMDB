@@ -1,14 +1,11 @@
-from re import L
-from typing import NoReturn
-from pymongo import MongoClient, TEXT
+from pymongo import MongoClient
 from getpass import getpass
 import os
-from colorama import Fore, Back, Style
+from colorama import Fore
 import colorama
 import util
 from pymongo.errors import ServerSelectionTimeoutError
-import time
-from commands.search_title import search_title, show_movie_info
+from commands.search_title import search_title
 
 def mongoConnect():
     """
