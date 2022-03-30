@@ -19,8 +19,7 @@ def search_genre(client):
             print(f'{Fore.RED}Unknown exception occurred while reading prompt, please retry:{Fore.RESET}\n{e}')
             continue
 
-    print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
-    time.sleep(2)
+    util.text_with_loading(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
     return
 
 
@@ -114,17 +113,20 @@ def search_genre_individual(client: MongoClient):
             else:
                 userChoice = False   
             if userChoice == True: 
-                choices = ['See more', 'Back to Main Menu']
+                choices = ['See more', 'Exit']
                 answers = util.get_valid_inquiry([{
                     'type': 'list',
                     'name': 'choice',
                     'message': 'What would you like to do now? (Arrow keys and enter to select)',
                     'choices': choices
                 }])
-                if answers['choice'] == 'See More':
+                print(answers['choice'])
+                if answers['choice'] == 'See more':
+                    print('Seeing more...')
                     continue
                 else:
-                    return False
+                    print('Exiting')
+                    break
 
     if noResult:
         print(f'{Fore.RED}No movie tities!\n')
