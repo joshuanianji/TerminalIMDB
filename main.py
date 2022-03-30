@@ -61,40 +61,41 @@ def mainMenu(client):
         command = raw_cmd['choice']
         
         if command == 'ST':
-            reset_screen()
             print('Searching for a title...')
             search_title(client)
+            reset_screen()
 
         elif command == 'SG':
-            reset_screen()
             print('Searching for a genre...')
             searchGenre(client)
             # Remove after implementing exit commands in searchGenre()
             print("Press Enter to return to the main menu.")
             getpass(prompt="")
+            reset_screen()
 
         elif command == 'SC':
-            reset_screen()
             print('Searching for a cast/crew member...')
             searchCast(client)
+            reset_screen()
 
         elif command == 'AM':
-            reset_screen()
             print('Adding a new movie...')
             addMovie(client)
             # Remove after implementing exit commands in addMovie()
             print("Press Enter to return to the main menu.")
             getpass(prompt="")
+            reset_screen()
 
         elif command == 'AC':
-            reset_screen()
             print('Adding a new cast/crew member')
             addCast(client)
             # Remove after implementing exit commands in addCast()
             print("Press Enter to return to the main menu.")
             getpass(prompt="")
+            reset_screen()
 
         else:
+            ##### PRINT MADE BY
             print('Exiting...')
             return
 
@@ -126,9 +127,8 @@ def searchGenre(client):
     db = client['291db']
 
     title_basic_collection = db['title_basics']
-    
-    os.system('cls' if os.name == 'nt' else 'clear')
-    genre = input('Tell which genre are you interested to watch? ')
+
+    genre = input('What genre would you like to watch? ')
 
 
     while True:
