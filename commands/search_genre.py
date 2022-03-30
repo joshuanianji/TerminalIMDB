@@ -20,7 +20,7 @@ def search_genre(client):
             continue
 
     print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
-    time.sleep(3)
+    time.sleep(2)
     return
 
 
