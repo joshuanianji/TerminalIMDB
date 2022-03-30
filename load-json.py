@@ -93,6 +93,13 @@ def prog():
 
     print(Fore.GREEN + 'Done!' + Fore.RESET)
 
+    db['title_basics'].create_index('tconst')
+    db['title_ratings'].create_index('tconst')
+    db['name_basics'].create_index('nconst')
+    db['title_principals'].create_index('nconst')
+    db['title_principals'].create_index('tconst')
+
+
 
 def main():
     colorama.init()

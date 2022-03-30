@@ -163,11 +163,8 @@ def searchGenre(client):
     title_basic_collection = db['title_basics']
     title_rating_collection = db['title_ratings']
 
-    title_basic_collection.create_index('tconst')
-    title_rating_collection.create_index('tconst')
-    
-  #  print(title_basic_collection.index_information())
-    #title_basic_collection.create_index([("genres", TEXT)])
+    #title_basic_collection.create_index('tconst')
+    #title_rating_collection.create_index('tconst')
     
     os.system('cls' if os.name == 'nt' else 'clear')
     genre = input('Tell which genre are you interested to watch? ')
@@ -188,7 +185,11 @@ def searchGenre(client):
     pipeline = [
             { "$unwind": "$genres"},
         {"$match": 
-            {"genres": genre
+            {"genres": 
+                    {
+                        '$regex': genre,
+                        '$options': 'i'
+                    }
             }
         },
         {   
@@ -293,9 +294,9 @@ def searchGenre(client):
             start = 0
             for res in aggResult:
                 start += 1
-                if start > 120:
-                    break
                 print(f"|{res['primaryTitle']: <70} | {res['voteAndRating']['averageRating']: <4} | {res['voteAndRating']['numVotes']}") 
+                if start > 100:
+                    break
             else:
                 userChoice = False   
             if userChoice == True: 
