@@ -18,6 +18,8 @@ def add_movie(client: MongoClient):
             continue
 
     print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
+    time.sleep(3)
+    return
 
 
 def add_movie_individual(client: MongoClient):

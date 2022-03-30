@@ -1,9 +1,11 @@
-from typing import Any, List
-from colorama import Fore
+import time
 import util
-from pymongo.mongo_client import MongoClient
-from tabulate import tabulate
 from typing import Union
+from colorama import Fore
+from typing import Any, List
+from tabulate import tabulate
+from pymongo.mongo_client import MongoClient
+
 
 def search_title(client: MongoClient):
     '''
@@ -19,6 +21,11 @@ def search_title(client: MongoClient):
         except Exception as e:
             print(f'{Fore.RED}Unknown exception occurred while reading prompt, please retry:{Fore.RESET}\n{e}')
             continue
+
+    print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
+    time.sleep(3)
+    return
+
 
 def search_title_individual(client: MongoClient) -> bool:
     """

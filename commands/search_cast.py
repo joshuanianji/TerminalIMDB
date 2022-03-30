@@ -20,6 +20,8 @@ def search_cast(client: MongoClient):
             continue
 
     print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
+    time.sleep(3)
+    return
 
 
 def search_cast_individual(client: MongoClient):

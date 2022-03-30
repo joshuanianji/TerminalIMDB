@@ -71,48 +71,6 @@ def text_with_loading(text, duration=0.75):
         counttime = counttime + 1
 
 
-# Validity stuff
-
-def get_valid_input(prompt, is_valid, error_msg='Please enter a valid input.', upper_case=False) -> str:
-    '''
-    Takes in a prompt and a predicate, and returns the first valid input from the user
-
-    inputs:
-        prompt: the prompt to display to the user
-        is_valid: a predicate that takes in the input (that might be converted to upper case) and returns a boolean
-        error_msg: the error message to display if the input is invalid
-        upper_case: whether or not to convert the input to upper case
-    '''
-    while True:
-        user_input = input(prompt)
-        if upper_case:
-            user_input = user_input.upper()
-        if is_valid(user_input):
-            return user_input.strip()
-        print(error_msg)
-
-def non_empty_string(prompt) -> str:
-    user_input = get_valid_input(prompt, lambda x: len(x) > 0, "Please enter a non empty string")
-
-    return user_input
-
-def get_valid_int_E(prompt):
-    user_input = get_valid_input(prompt, lambda x: x.isdigit() or x.upper() == 'EXIT' or x.upper() == 'E')
-    if user_input.upper() == "EXIT" or user_input.upper() == "E":
-        return False
-    else:
-        return int(user_input)
-
-
-def get_valid_int(prompt) -> int:
-    '''
-    Get a valid integer from the user
-    '''
-    user_input = get_valid_input(prompt, lambda x: x.isdigit(), 'Please enter a valid integer.')
-    return int(user_input)
-
-
-
 def get_valid_inquiry(questions):
     '''
     Get a valid inquiry from the user

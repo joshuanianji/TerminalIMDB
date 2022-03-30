@@ -21,6 +21,9 @@ def add_cast_crew(client: MongoClient):
             print(f'{Fore.RED}Unknown exception occurred while reading prompt, please retry:{Fore.RESET}\n{e}')
             continue
 
+    print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
+    time.sleep(3)
+    return
 
 def add_cast_crew_individual(client: MongoClient):
     '''
