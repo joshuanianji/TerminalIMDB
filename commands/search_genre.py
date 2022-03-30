@@ -1,11 +1,7 @@
 from colorama import Fore
 import util
-import time
 import re
 from pymongo.mongo_client import MongoClient
-from pymongo.collection import Collection
-from InquirerPy import inquirer
-from pprint import pprint
 
 
 def search_genre(client):
