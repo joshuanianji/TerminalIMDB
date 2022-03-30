@@ -1,4 +1,3 @@
-import time
 import util
 from typing import Union
 from colorama import Fore
@@ -22,8 +21,7 @@ def search_title(client: MongoClient):
             print(f'{Fore.RED}Unknown exception occurred while reading prompt, please retry:{Fore.RESET}\n{e}')
             continue
 
-    print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
-    time.sleep(3)
+    util.text_with_loading(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
     return
 
 

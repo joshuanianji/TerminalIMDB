@@ -1,3 +1,4 @@
+import time
 from colorama import Fore
 import util
 from pymongo.mongo_client import MongoClient
@@ -21,8 +22,7 @@ def add_cast_crew(client: MongoClient):
             print(f'{Fore.RED}Unknown exception occurred while reading prompt, please retry:{Fore.RESET}\n{e}')
             continue
 
-    print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
-    time.sleep(3)
+    util.text_with_loading(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
     return
 
 def add_cast_crew_individual(client: MongoClient):
