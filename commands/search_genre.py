@@ -1,6 +1,7 @@
 from colorama import Fore
 import util
 import time
+import re
 from pymongo.mongo_client import MongoClient
 from pymongo.collection import Collection
 from InquirerPy import inquirer
@@ -19,7 +20,7 @@ def search_genre(client):
             print(f'{Fore.RED}Unknown exception occurred while reading prompt, please retry:{Fore.RESET}\n{e}')
             continue
 
-    util.text_with_loading(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}', 1.25)
+    util.text_with_loading(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}', 1)
     return
 
 
@@ -46,14 +47,16 @@ def search_genre_individual(client: MongoClient):
     minVoteCount = util.prompt_int_or_e('Minimum number of votes you would want for the search?')
     if minVoteCount is None: return False
     
+    #regex = RegExp(["^", string, "$"].join(""), "i")
+    genre = '^' +genre + '$'
     pipeline = [
         {'$unwind': '$genres'},
         {'$match': 
-            {'genres': 
-                {
-                    '$regex': genre,
-                    '$options': 'i'
-                }
+            {'genres': re.compile(genre, re.IGNORECASE)
+                # {
+                #     '$regex': genre,
+                #     '$options': 'i'
+                # }
             }
         },
         {'$lookup':
@@ -98,7 +101,7 @@ def search_genre_individual(client: MongoClient):
     if aggResult:
         NumHeader,titleHeader, averageRatHeader, numVotes = "No.", 'Title ', 'AR', 'Votes'
         
-        print(f'{NumHeader:>4}|{titleHeader: <75} | {averageRatHeader: <4} | {numVotes:}')
+        print(f'{NumHeader:>4}| {titleHeader: <75} | {averageRatHeader: <4} | {numVotes:}')
         print('-'*94)
         userChoice = True
         start = 0
@@ -109,7 +112,7 @@ def search_genre_individual(client: MongoClient):
             for res in aggResult:
                 start += 1
                 noResult = False
-                print(f'{start:>4}|{res["primaryTitle"]: <75} | {res["voteAndRating"]["averageRating"]: <4} | {res["voteAndRating"]["numVotes"]}') 
+                print(f'{start:>4}| {res["primaryTitle"]: <75} | {res["voteAndRating"]["averageRating"]: <4} | {res["voteAndRating"]["numVotes"]}') 
                 if start > end:
                     break
             else:
