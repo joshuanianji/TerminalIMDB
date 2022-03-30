@@ -1,4 +1,3 @@
-
 from colorama import Fore
 import util
 from pymongo.mongo_client import MongoClient
