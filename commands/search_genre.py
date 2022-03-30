@@ -5,6 +5,10 @@ from pymongo.mongo_client import MongoClient
 
 
 def search_genre(client):
+    '''
+        keeps on calling search_genre_individual() if user wants to perform one more search
+        stop the call if user says no to search again prompt
+    '''
     wantToSearch = True
     while wantToSearch:
         try:
