@@ -158,10 +158,6 @@ def searchGenre(client):
     db = client['291db']
 
     title_basic_collection = db['title_basics']
-    title_rating_collection = db['title_ratings']
-
-    #title_basic_collection.create_index('tconst')
-    #title_rating_collection.create_index('tconst')
     
     os.system('cls' if os.name == 'nt' else 'clear')
     genre = input('Tell which genre are you interested to watch? ')
@@ -180,25 +176,21 @@ def searchGenre(client):
 
     
     pipeline = [
-            { "$unwind": "$genres"},
+        { "$unwind": "$genres"},
         {"$match": 
             {"genres": 
-                    {
-                        '$regex': genre,
-                        '$options': 'i'
-                    }
+                {
+                    '$regex': genre,
+                    '$options': 'i'
+                }
             }
         },
-        {   
-            "$lookup":
-            {
-                "from" : "title_ratings",
+        {"$lookup":
+            {"from" : "title_ratings",
                 "localField" :"tconst",
                 "foreignField": "tconst",
-                "pipeline":
-                [
-                    {
-                        "$project":
+                "pipeline": [
+                    {"$project":
                         {
                             "numVotes": 1,
                             "averageRating": 1,
@@ -210,16 +202,16 @@ def searchGenre(client):
         },
         {"$unwind": "$voteAndRating"},
         {"$match": 
-          {"voteAndRating.numVotes": {"$gte": minVoteCount}
-               }   
-           },
+            {"voteAndRating.numVotes": 
+                {"$gte": minVoteCount}
+            }   
+        },
         {"$sort":
             {
                 "voteAndRating.averageRating":-1,
                 "voteAndRating.numVotes": -1
             }
         },
-     
         {"$project":
             {
                 "_id": 0,
@@ -228,60 +220,11 @@ def searchGenre(client):
                 "primaryTitle": 1
             }
         }
-           
-            ]
-    options = {
-                "cursor": 
-                {
-                    "batchSize": 5
-                }
-    }
-   
-
-
-
-    pipeline1 = [
-        {
-            "$lookup":   {
-                    "from" : "title_ratings",
-                    # "localField" :"tconst",
-                    # "foreignField": "tconst",
-                    "let":{"vote":"numVotes"},
-                    "pipeline":
-            [
-                {"$match": 
-                    {"numVotes": {"$gte": minVoteCount}
-                       # "expr": {"$gte": [, "$minVoteCount"]}
-                    } },
-                {
-                     "$project":  
-                    {
-                    "_id": 0,
-                    }
-                }
-            ],
-                    "as" : "voteAndRating"
-            }
-                # "project":  
-                # {
-                #     "_id": 0,
-                #     "numVotes": 1, 
-                #     "tconst": 1,
-                #     "primaryTitle": 1,
-                #  },
-                  
-        }
     ]
-    
-    #aggResult2 = title_basic_collection.aggregate(pipelinfrome1)
+
     aggResult = title_basic_collection.aggregate(pipeline)
 
-
-    count = 0
-
     if aggResult:
-       
-        #print(tabulate(aggResult, headers="keys"))
         titleHeader, averageRatHeader, numVotes = "Title ", "AR", "Votes"
         
         print(f"|{titleHeader: <70} | {averageRatHeader: <4} | {numVotes:}")
@@ -303,18 +246,6 @@ def searchGenre(client):
 
     else:
         print("No Movie Title found, you can try to search again\n")
-            
-    # count = 0     
-    # for res in aggResult:
-    #     print(res)
-    #     count+=1
-    #     if count == 3:
-    #         break
-    #genreList = title_basic_collection.find_one({'genres': genre})
-   # print(genreList)
-    pass    
-
-
 
 
 
@@ -445,6 +376,7 @@ def searchCast(client):
         tmpStr += "more "
     tmpStr += "results found, press Enter to return to the main menu."
     input(tmpStr)
+    return
 
 
 
