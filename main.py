@@ -1,4 +1,5 @@
 from re import L
+from typing import NoReturn
 from pymongo import MongoClient, TEXT
 from getpass import getpass
 import os
@@ -218,8 +219,8 @@ def searchGenre(client):
            },
         {"$sort":
             {
-                "voteAndRating.averageRating":-1,
-                "voteAndRating.numVotes": -1
+                "voteAndRating.averageRating":-1
+                #"voteAndRating.numVotes": -1
             }
         },
      
@@ -233,67 +234,24 @@ def searchGenre(client):
         }
            
             ]
-    options = {
-                "cursor": 
-                {
-                    "batchSize": 5
-                }
-    }
-   
-
-
-
-    pipeline1 = [
-        {
-            "$lookup":   {
-                    "from" : "title_ratings",
-                    # "localField" :"tconst",
-                    # "foreignField": "tconst",
-                    "let":{"vote":"numVotes"},
-                    "pipeline":
-            [
-                {"$match": 
-                    {"numVotes": {"$gte": minVoteCount}
-                       # "expr": {"$gte": [, "$minVoteCount"]}
-                    } },
-                {
-                     "$project":  
-                    {
-                    "_id": 0,
-                    }
-                }
-            ],
-                    "as" : "voteAndRating"
-            }
-                # "project":  
-                # {
-                #     "_id": 0,
-                #     "numVotes": 1, 
-                #     "tconst": 1,
-                #     "primaryTitle": 1,
-                #  },
-                  
-        }
-    ]
-    
-    #aggResult2 = title_basic_collection.aggregate(pipelinfrome1)
+     
     aggResult = title_basic_collection.aggregate(pipeline)
 
 
     count = 0
 
     if aggResult:
-       
-        #print(tabulate(aggResult, headers="keys"))
         titleHeader, averageRatHeader, numVotes = "Title ", "AR", "Votes"
         
         print(f"|{titleHeader: <70} | {averageRatHeader: <4} | {numVotes:}")
         userChoice = True
         start = 0
+        noResult = True
         while userChoice:
             start = 0
             for res in aggResult:
                 start += 1
+                noResult = False
                 print(f"|{res['primaryTitle']: <70} | {res['voteAndRating']['averageRating']: <4} | {res['voteAndRating']['numVotes']}") 
                 if start > 100:
                     break
@@ -304,26 +262,9 @@ def searchGenre(client):
                 if choice.lower() != 'y':
                     userChoice = False
 
-    else:
+    if noResult:
         print("No Movie Title found, you can try to search again\n")
             
-    # count = 0     
-    # for res in aggResult:
-    #     print(res)
-    #     count+=1
-    #     if count == 3:
-    #         break
-    #genreList = title_basic_collection.find_one({'genres': genre})
-   # print(genreList)
-    
-    
-
-    
-
-
-
-
-
 
 def searchCast(client):
     """
@@ -350,7 +291,7 @@ def addMovie(client):
     """
     
 
-    pass
+    
 
 
 
