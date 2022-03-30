@@ -92,7 +92,7 @@ def non_empty_string(prompt) -> str:
 
     return user_input
 
-def get_valid_int_E(prompt) -> int:
+def get_valid_int_E(prompt):
     user_input = get_valid_input(prompt, lambda x: x.isdigit() or x.upper() == 'EXIT' or x.upper() == 'E')
     if user_input.upper() == "EXIT" or user_input.upper() == "E":
         return False
