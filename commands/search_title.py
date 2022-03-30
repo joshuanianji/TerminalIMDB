@@ -1,5 +1,5 @@
 from typing import List
-from colorama import Fore, Back, Style
+from colorama import Fore
 import util
 from pymongo.mongo_client import MongoClient
 from tabulate import tabulate
@@ -55,9 +55,9 @@ def search_title_individual(client: MongoClient) -> bool:
         }
         db = client['291db']
         collection = db['title_basics']
-        titles = list(collection.find(query)) # # turn the cursor into a concrete list.
+        title_count = collection.count_documents(query)
 
-        if len(titles) == 0:
+        if title_count == 0:
             choices = ['Search Again', 'Back to Main Menu']
             answers = util.get_valid_inquiry([{
                 'type': 'list',
@@ -71,24 +71,38 @@ def search_title_individual(client: MongoClient) -> bool:
                 return True
 
         else:
-            print(f'Found {Fore.GREEN}{len(titles)}{Fore.RESET} titles. Please select one to see more information.\n')
-            headers, choices = get_movies_display_list(titles)
-            other_choices = ['Search Again', 'Back to Main Menu']
-            print(f'{Fore.YELLOW}{headers}{Fore.RESET}')
-            answers = util.get_valid_inquiry([{
-                'type': 'list',
-                'name': 'choice',
-                'message': 'Arrow keys and enter to select',
-                'choices': choices + other_choices
-            }])
-            if answers['choice'] == 'Search Again':
-                return False
-            elif answers['choice'] == 'Back to Main Menu':
-                return True
-            else:
-                # here, answers['choice'] will be the ID of the movie (tconst)
-                user_choice = show_movie_info(client, answers['choice'])
-                return user_choice
+            print(f'Found {Fore.GREEN}{title_count}{Fore.RESET} titles. Select one for more info, or go to bottom for other options. \n')
+            start_index = 0
+            while True:
+                titles = list(collection.find(query).limit(50).skip(start_index)) # turn the cursor into a concrete list.
+
+                headers, choices = get_movies_display_list(titles)
+
+                # Miscellaneous other choices
+                other_choices = ['Search Again', 'Back to Main Menu']
+
+                if len(titles) >= 50:
+                    print(f'{Fore.YELLOW}There may be more titles below.\n{Fore.RESET}')
+                    other_choices.append('See More Titles')
+
+                print(f'{Fore.CYAN}{headers}{Fore.RESET}')
+                answers = util.get_valid_inquiry([{
+                    'type': 'list',
+                    'name': 'choice',
+                    'message': 'Arrow keys and enter to select',
+                    'choices': other_choices + choices
+                }])
+                if answers['choice'] == 'Search Again':
+                    return False
+                elif answers['choice'] == 'Back to Main Menu':
+                    return True
+                elif answers['choice'] == 'See More Titles':
+                    start_index += 50
+                    continue
+                else:
+                    # here, answers['choice'] will be the ID of the movie (tconst)
+                    user_choice = show_movie_info(client, answers['choice'])
+                    return user_choice
 
 def get_movies_display_list(titles: List[dict]) -> List[str]:
     """
@@ -116,7 +130,7 @@ def get_movies_display_list(titles: List[dict]) -> List[str]:
 
 
     tabulated = tabulate(tabulates, headers=['tconst', 'Primary Title', 'OG Title', 'Type', 'Adult', 'Start Year', 'End Year', 'Runtime', 'Genres']).split('\n')
-    headers = '   ' + tabulated[0]
+    headers = '  ' + tabulated[0]
     
     tabulate_str = tabulated[2:] # now, every element is equally spaced. 
     display_list = []
