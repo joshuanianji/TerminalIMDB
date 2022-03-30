@@ -5,7 +5,7 @@ from colorama import Fore
 import colorama
 import util
 from pymongo.errors import ServerSelectionTimeoutError
-from commands.search_title import   
+from commands.search_title import search_title
 from commands.add_cast_crew import add_cast_crew
 from commands.search_genre import search_genre
 
