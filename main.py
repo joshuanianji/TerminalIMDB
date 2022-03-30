@@ -106,6 +106,7 @@ def mainMenu(client):
 def reset_screen(welcome_text = None, show_names = False):
     os.system('cls' if os.name == 'nt' else 'clear')
     util.starting_text(welcome_text, show_names)
+    print('-'*70 + '\n')
 
 
 
@@ -395,6 +396,7 @@ def addCast(client):
 def main():
     colorama.init()
     client = mongoConnect()
+    reset_screen()
     mainMenu(client)
     client.close()
 
