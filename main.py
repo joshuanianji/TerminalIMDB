@@ -315,10 +315,8 @@ def searchGenre(client):
     #         break
     #genreList = title_basic_collection.find_one({'genres': genre})
    # print(genreList)
-    
-    
+    pass    
 
-    
 
 
 
@@ -334,8 +332,168 @@ def searchCast(client):
 
     Input: client - pymongo client to be processed
     """
-    #TODO
-    pass
+
+    db = client["291db"]
+    nameBasicsColl = db["name_basics"]
+    titlePrincipalsColl = db["title_principlals"]
+
+    foundName = False
+    while not foundName:
+        crewName = input("Enter the cast/crew name: ").lower()
+        if crewName == 'exit' or crewName == 'e':
+            return
+
+        cursor = nameBasicsColl.aggregate(
+            [
+                {
+                    "$match":{
+                        "primaryName":{
+                            "$regex": crewName,
+                            "$options": "i"
+                        }
+                    }
+                },
+                {
+                    "$project":{
+                        "nconst":1,
+                        "primaryName":1,
+                        "primaryProfession":1
+                    }
+                }
+            ]
+        )
+
+
+        if cursor:
+            foundName = True
+        else:
+            print("No results with that name.")
+            invalidInput = True
+            while invalidInput:
+                tryAgain = input("Would you like to try searching again (Y/N)? ").lower()
+                if tryAgain in ['y', 'n']:
+                    invalidInput = False
+                else:
+                    print("Invalid input. Please try again.")
+
+            if tryAgain == 'n':
+                return
+            else:
+                continue
+
+
+
+        # userChoice = True
+        # while userChoice:
+        #     start = 0
+        #     for res in cursor:
+        #         start += 1
+        #         if start > 120:
+        #             break
+        #         print(f"|{res['primaryTitle']: <70} | {res['voteAndRating']['averageRating']: <4} | {res['voteAndRating']['numVotes']}") 
+        #     else:
+        #         userChoice = False   
+        #     if userChoice == True: 
+        #         choice = input("press Y/y (or anything else for negative) if you want to see more results\n")
+        #         if choice.lower() != 'y':
+        #             userChoice = False
+
+
+
+
+
+        for person in cursor:
+
+            print('\n\n')
+            nameID = person["nconst"]
+            name = person["primaryName"]
+            professions = person["primaryProfession"]
+
+            print(f"Data for cast/crew member: {name} ({nameID})")
+            print("Professions: ", end='')
+            print(*professions, sep=', ')
+
+            # Find all the titles the movie person has participated in 
+            titlesCursor = titlePrincipalsColl.aggregate(
+                [
+                    # Find all the instances of the movie person in title_principals
+                    {
+                        "$match": {
+                            "nconst": 'nm0003044'
+                        }
+                    }#,
+                    # # Find the title of the movie mentioned in that instance
+                    # {
+                    #     "$lookup": {
+                    #         "from": 'title_basics',
+                    #         "localField": 'tconst',
+                    #         "foreignField": 'tconst',
+                    #         "as": 'movie'
+                    #     }
+                    # },
+                    # # Extract characters from array
+                    # {
+                    #     "$unwind": {
+                    #         "path": "$characters",
+                    #         "preserveNullAndEmptyArrays": True
+                    #     }
+                    # },
+                    # # Extract role as an object, from an array
+                    # {
+                    #     "$unwind": {
+                    #         "path": "$movie",
+                    #         "preserveNullAndEmptyArrays": True
+                    #     }
+                    # },
+                    # # Filter out all the unnecesary columns
+                    # {
+                    #     "$project": {
+                    #         "tconst":1,
+                    #         "job": 1,
+                    #         "characters":1,
+                    #         "movie.primaryTitle":1
+                    #     }
+                    # }
+                ]
+            )
+
+            for item in titlesCursor:
+                print(item)
+
+            # for item in titlesCursor:
+            #     titleID = item["tconst"]
+            #     job = item["job"]
+            #     char = item["characters"]
+            #     primaryTitle = item["movie"]["primaryTitle"]
+            #     print(f"Played {char} ({job}) in {primaryTitle} ({titleID})")
+
+            # input("Press Enter to see results for the next person.")
+
+            
+            
+
+
+
+
+
+
+
+
+
+
+
+
+            # if continuePerson:
+            #     invInp = True
+            #     while invInp:
+            #         tryAgain = input("Would you like to see results for the next person (Y/N)? ").lower()
+            #         if tryAgain in ['y', 'n']:
+            #             invInp = False
+            #         else:
+            #             print("Invalid input. Please try again.")
+
+            #     if tryAgain == 'n':
+            #         return
 
 
 
