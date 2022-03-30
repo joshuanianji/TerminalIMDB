@@ -68,7 +68,6 @@ def text_with_loading(text, duration=0.75):
         print ("\033[A                             \033[A")
         print(text + ' ' + animation[anicount])
         anicount = (anicount + 1) % 4
-        counttime = counttime + 1
 
 
 def get_valid_inquiry(questions):
@@ -107,7 +106,7 @@ def prompt_nonempty_string(msg: str) -> Union[str, None]:
         ).execute()
 
         if nonempty_str.upper() == 'EXIT' or nonempty_str.upper() == 'E':
-            print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
+            # return to Main Menu
             return None
 
         return nonempty_str
@@ -126,7 +125,7 @@ def prompt_int_or_e(msg: str):
         ).execute()
 
         if nonempty_str.upper() == 'EXIT' or nonempty_str.upper() == 'E':
-            print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
+            # return to Main Menu
             return None
 
         return int(nonempty_str)

@@ -17,7 +17,7 @@ def add_movie(client: MongoClient):
             print(f'{Fore.RED}Unknown exception occurred while reading prompt, please retry:{Fore.RESET}\n{e}')
             continue
 
-    util.text_with_loading(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
+    util.text_with_loading(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}', 1)
     return
 
 
@@ -87,7 +87,6 @@ def prompt_unique_id(title_basic_col: Collection):
     while True: 
         unique_id = inquirer.text(message='Unique movie ID').execute()
         if unique_id.upper() == 'EXIT' or unique_id.upper() == 'E':
-            print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
             return None
 
         res = title_basic_col.find_one({'tconst': unique_id})

@@ -22,7 +22,7 @@ def add_cast_crew(client: MongoClient):
             print(f'{Fore.RED}Unknown exception occurred while reading prompt, please retry:{Fore.RESET}\n{e}')
             continue
 
-    util.text_with_loading(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
+    util.text_with_loading(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}', 1)
     return
 
 def add_cast_crew_individual(client: MongoClient):
@@ -41,16 +41,15 @@ def add_cast_crew_individual(client: MongoClient):
     
     member_id = get_member_id(name) # nm0000009
     if member_id is None:
-        return True
+        return False
     
     title_id = get_title_id(title) # tt0910935
     if title_id is None:
-        return True
+        return False
 
-    category = inquirer.text(message='Enter the category:').execute()
-    if category.upper() == 'EXIT' or category.upper() == 'E':
-        print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
-        return True
+    category = util.prompt_nonempty_string(message='Enter the category:').execute()
+    if category is None:
+        return False
     
     # Set ordering to the largest ordering listed for the title plus one
     order = list(principals.find({'tconst': title_id}).sort('ordering', -1).limit(1))[0]['ordering'] + 1
@@ -94,7 +93,6 @@ def get_member_id(name: Collection):
     while True: # nm0000009
         member_id = inquirer.text(message='Enter the member id:').execute()
         if member_id.upper() == 'EXIT' or member_id.upper() == 'E':
-            print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
             return None
 
         # check to see if the member_id is in the database
@@ -116,7 +114,6 @@ def get_title_id(title: Collection):
     while True: # tt0910935
         title_id = inquirer.text(message='Enter the title id:').execute()
         if title_id.upper() == 'EXIT' or title_id.upper() == 'E':
-            print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
             return None
         
         # check to see if the title_id is in the database

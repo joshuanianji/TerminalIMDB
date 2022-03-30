@@ -19,7 +19,7 @@ def search_cast(client: MongoClient):
             print(f'{Fore.RED}Unknown exception occurred while reading prompt, please retry:{Fore.RESET}\n{e}')
             continue
 
-    util.text_with_loading(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
+    util.text_with_loading(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}', 1)
     return
 
 
