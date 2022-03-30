@@ -4,6 +4,7 @@ import os
 from colorama import Fore
 import colorama
 import util
+import time
 from pymongo.errors import ServerSelectionTimeoutError
 from commands.search_title import search_title
 from commands.add_cast_crew import add_cast_crew
@@ -130,18 +131,7 @@ def searchGenre(client):
         print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
         return True
         
-    # while True:
-    #     try:
-           
-    #         if minVoteCount < 0:
-    #             raise ValueError('value needs to be >= 0')
-    
-    #     except Exception as e:
-    #             print(e.args)
-    #     else:
-    #         break
 
-    
     pipeline = [
         { "$unwind": "$genres"},
         {"$match": 
@@ -190,14 +180,14 @@ def searchGenre(client):
     ]
 
     aggResult = title_basic_collection.aggregate(pipeline)
-
+    noResult = True
     if aggResult:
         titleHeader, averageRatHeader, numVotes = "Title ", "AR", "Votes"
         
         print(f"|{titleHeader: <70} | {averageRatHeader: <4} | {numVotes:}")
         userChoice = True
         start = 0
-        noResult = True
+       
         while userChoice:
             start = 0
             for res in aggResult:
@@ -216,7 +206,11 @@ def searchGenre(client):
     if noResult:
         print("No Movie Title found, you can try to search again\n")
 
+    print('Press Enter to return to main menu')
+    getpass(prompt="")
+
     print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
+    
     return True
     
 
