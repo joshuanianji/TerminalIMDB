@@ -147,6 +147,3 @@ def search_genre_individual(client: MongoClient):
     command = raw_cmd['choice']
 
     return command == 'y'
-
-  
-
