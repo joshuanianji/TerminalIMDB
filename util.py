@@ -171,7 +171,7 @@ def prompt_int_or_e(msg: str):
             print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
             return None
 
-        return nonempty_str
+        return int(nonempty_str)
 
 
 class IntOrExitValidator(Validator):

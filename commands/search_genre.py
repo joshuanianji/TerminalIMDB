@@ -1,5 +1,6 @@
 from colorama import Fore
 import util
+import time
 from pymongo.mongo_client import MongoClient
 from pymongo.collection import Collection
 from InquirerPy import inquirer
@@ -19,6 +20,8 @@ def search_genre(client):
             continue
 
     print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
+    time.sleep(3)
+    return
 
 
 def search_genre_individual(client: MongoClient):
@@ -77,8 +80,8 @@ def search_genre_individual(client: MongoClient):
         },
         {'$sort':
             {
-                'voteAndRating.averageRating':-1
-                #'voteAndRating.numVotes': -1
+                'voteAndRating.averageRating':-1,
+                'voteAndRating.numVotes': -1
             }
         },
         {'$project':
