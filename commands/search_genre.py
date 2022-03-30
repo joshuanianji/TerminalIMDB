@@ -113,7 +113,8 @@ def search_genre_individual(client: MongoClient):
                     break
             else:
                 userChoice = False
-                print(f'{Fore.GREEN} No more results to display!')
+                if not noResult:
+                    print(f'{Fore.GREEN} No more results to display!')
             if userChoice == True: 
                 choices = ['See more', 'leave']
                 answers = util.get_valid_inquiry([{
