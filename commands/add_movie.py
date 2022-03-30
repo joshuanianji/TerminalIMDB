@@ -18,7 +18,7 @@ def add_movie(client: MongoClient):
             print(f'{Fore.RED}Unknown exception occurred while reading prompt, please retry:{Fore.RESET}\n{e}')
             continue
 
-    util.text_with_loading(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}', 1)
+    util.text_with_loading(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}', 0.75)
     return
 
 
@@ -65,8 +65,9 @@ def add_movie_individual(client: MongoClient):
     }
     title_basic_col.insert_one(jsonQuery)
     #title_basic_col.create_index('tconst')
+    print(f'{Fore.BLUE} Adding Movie {title}... {Fore.RESET}')
     pprint(jsonQuery)
-    print(f'{Fore.GREEN}Movie {title} added successfully!{Fore.RESET}')
+    print(f'{Fore.GREEN}Movie {title} added successfully!{Fore.RESET}\n')
 
     choices = ['Add another', 'Back to Main Menu']
     answers = util.get_valid_inquiry([{

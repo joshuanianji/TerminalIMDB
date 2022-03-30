@@ -1,9 +1,6 @@
 from colorama import Fore, Back, Style, init
-from tqdm import tqdm
 import json
 import time
-import sys
-import os
 
 def starting_text():
     '''
