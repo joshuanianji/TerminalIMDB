@@ -3,3 +3,7 @@
 env/
 mongo_data
 __pycache__
+
+# Pyinstaller
+*.spec
+build

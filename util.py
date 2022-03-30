@@ -1,4 +1,5 @@
 import time
+from typing import Union
 from InquirerPy import prompt
 from InquirerPy import inquirer
 from colorama import Fore, Style
@@ -111,17 +112,6 @@ def get_valid_int(prompt) -> int:
     return int(user_input)
 
 
-def get_in_list(prompt, L) -> str:
-    '''
-    Gets a valid input from the user that is in the list L
-    '''
-    return get_valid_input(
-        prompt, 
-        lambda x: x in list(map(lambda x: x.upper(), L)), 
-        'Please enter a valid input (one of: {})'.format(', '.join(L)), 
-        True
-    )
-
 
 def get_valid_inquiry(questions):
     '''
@@ -146,7 +136,7 @@ def get_valid_inquiry(questions):
 # InquirePy
 
 
-def prompt_nonempty_string(msg: str):
+def prompt_nonempty_string(msg: str) -> Union[str, None]:
     '''
     Prompts the user for a nonempty string
 

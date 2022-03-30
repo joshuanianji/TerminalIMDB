@@ -76,7 +76,7 @@ def tsv2json(input_file,output_file):
     file_length = len(file.readlines())
     file.seek(pos)
 
-    pbar = tqdm(total=file_length)
+    # pbar = tqdm(total=file_length)
 
     for line in file:
         d = {}
@@ -117,8 +117,8 @@ def tsv2json(input_file,output_file):
 
         # we will use strip to remove '\n'.
         arr.append(d)
-        pbar.update()
-    pbar.close()
+        # pbar.update()
+    # pbar.close()
 
     # we will append all the individual dictionaires into list 
     # and dump into file.
