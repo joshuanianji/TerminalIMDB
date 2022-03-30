@@ -29,10 +29,10 @@ def search_title_individual(client: MongoClient) -> bool:
     Returns:
         user_exit: true if the user wants to exit back to main page, false if the user wants to continue searching
     """
-    print(f'{Fore.CYAN}Please enter in your keywords (space separated), or "BACK" to exit{Fore.RESET}')
+    print(f'{Fore.CYAN}Please enter in your keywords (space separated), or "EXIT/E" to exit{Fore.RESET}')
     keywords = util.get_valid_input('> ', lambda cmd: cmd.strip() != '', 'Please do not enter an empty string!', True).split()
     
-    if keywords[0] == 'BACK':
+    if keywords[0] == 'EXIT' or keywords[0] == 'E':
         print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
         return True 
     else:

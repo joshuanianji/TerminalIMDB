@@ -1,6 +1,6 @@
 from colorama import Fore, Back, Style
 import time
-from PyInquirer import prompt
+from InquirerPy import prompt
 
 RAINBOW = [Fore.RED, Fore.YELLOW, Fore.GREEN, Fore.BLUE, Fore.CYAN, Fore.MAGENTA, Fore.WHITE]
 

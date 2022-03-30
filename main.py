@@ -358,53 +358,6 @@ def main():
     client.close()
 
 
-
-def main_2():
-    pipeline1 = [
-        {
-            "$lookup":   {
-                    "from" : "title_ratings",
-                    # "localField" :"tconst",
-                    # "foreignField": "tconst",
-                    "let":{"vote":"numVotes"},
-                    "pipeline":[
-                     {"$match": {
-                        "expr": {"$gte": ["$$vote", "$minVoteCount"]}
-                     } },
-                     {
-                     "$project":  
-                    {
-                    "_id": 0,
-                    }}],
-                    "as" : "voteAndRating"
-            }
-                # "project":  
-                # {
-                #     "_id": 0,
-                #     "numVotes": 1, 
-                #     "tconst": 1,
-                #     "primaryTitle": 1,
-                #  },
-                  
-        }
-    ]
-    from pprint import pprint
-    colorama.init()
-    client = mongoConnect()
-    title_basic_collection = client['291db']['title_basic']
-    aggResult2 = title_basic_collection.aggregate(pipeline1)
-    for res in aggResult2:
-        pprint(res)
-    client.close()
-
-
-def main_3():
-    # tt0083528
-    colorama.init()
-    client = mongoConnect()
-    show_movie_info(client, 'tt0083528')
-    client.close()
-
 if __name__ == "__main__":
     main()
 
