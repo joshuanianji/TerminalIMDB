@@ -1,7 +1,10 @@
-from typing import Union
-from colorama import Fore, Style
 import time
 from InquirerPy import prompt
+from InquirerPy import inquirer
+from colorama import Fore, Style
+from InquirerPy.validator import EmptyInputValidator
+from prompt_toolkit.validation import Validator, ValidationError
+
 
 RAINBOW = [Fore.RED, Fore.YELLOW, Fore.GREEN, Fore.BLUE, Fore.CYAN, Fore.MAGENTA, Fore.WHITE]
 
@@ -138,3 +141,63 @@ def get_valid_inquiry(questions):
         except Exception as e:
             print(f'{Fore.RED}Unknown exception occurred while reading prompt, please retry:{Fore.RESET}\n{e}')
             continue
+
+
+# InquirePy
+
+
+def prompt_nonempty_string(msg: str):
+    '''
+    Prompts the user for a nonempty string
+
+    Returns None is the user wants to exit back to the main menu
+    '''
+    while True: 
+        nonempty_str = inquirer.text(
+            message=msg, 
+            validate=EmptyInputValidator()
+        ).execute()
+
+        if nonempty_str.upper() == 'EXIT' or nonempty_str.upper() == 'E':
+            print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
+            return None
+
+        return nonempty_str
+
+
+def prompt_int_or_e(msg: str):
+    '''
+    Prompts the user for a nonempty string
+
+    Returns None is the user wants to exit back to the main menu
+    '''
+    while True: 
+        nonempty_str = inquirer.text(
+            message=msg, 
+            validate=IntOrExitValidator()
+        ).execute()
+
+        if nonempty_str.upper() == 'EXIT' or nonempty_str.upper() == 'E':
+            print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
+            return None
+
+        return nonempty_str
+
+
+class IntOrExitValidator(Validator):
+    def validate(self, document) -> None:
+        """Check if user input is a valid number.
+
+        See Also:
+            https://python-prompt-toolkit.readthedocs.io/en/master/pages/asking_for_input.html?highlight=validator#input-validation
+        """
+        text = document.text
+        if text.upper() == 'EXIT' or text.upper() == 'E':
+            return
+        elif text.isdigit():
+            return
+        else:
+            raise ValidationError(
+                message='Please enter a valid integer or "EXIT"/"E" to return to Main Menu',
+                cursor_position=len(text)
+            )

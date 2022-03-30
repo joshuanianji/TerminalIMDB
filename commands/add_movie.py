@@ -1,10 +1,8 @@
 import util
+from colorama import Fore
+from InquirerPy import inquirer
 from pymongo import MongoClient
 from pymongo.collection import Collection
-from InquirerPy import inquirer
-from colorama import Fore
-from InquirerPy.validator import EmptyInputValidator
-from prompt_toolkit.validation import Validator, ValidationError
 
 
 def add_movie(client: MongoClient):
@@ -40,16 +38,16 @@ def add_movie_individual(client: MongoClient):
     unique_id = prompt_unique_id(title_basic_col)
     if unique_id is None: return False
 
-    title = prompt_nonempty_string('Movie Title:')
+    title = util.prompt_nonempty_string('Movie Title:')
     if title is None: return False
 
-    startYear = prompt_int_or_e('Start year:')
+    startYear = util.prompt_int_or_e('Start year:')
     if startYear is None: return False
 
-    runTime = prompt_int_or_e('Running time (int):')
+    runTime = util.prompt_int_or_e('Running time (int):')
     if runTime is None: return False
 
-    genreList = prompt_nonempty_string('Genres (comma separated):').split(',')
+    genreList = util.prompt_nonempty_string('Genres (comma separated):').split(',')
     if genreList is None: return False
 
     jsonQuery = {
@@ -98,59 +96,3 @@ def prompt_unique_id(title_basic_col: Collection):
             continue
         else:
             return unique_id
-
-def prompt_nonempty_string(msg: str):
-    '''
-    Prompts the user for a nonempty string
-
-    Returns None is the user wants to exit back to the main menu
-    '''
-    while True: 
-        nonempty_str = inquirer.text(
-            message=msg, 
-            validate=EmptyInputValidator()
-        ).execute()
-
-        if nonempty_str.upper() == 'EXIT' or nonempty_str.upper() == 'E':
-            print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
-            return None
-
-        return nonempty_str
-
-
-def prompt_int_or_e(msg: str):
-    '''
-    Prompts the user for a nonempty string
-
-    Returns None is the user wants to exit back to the main menu
-    '''
-    while True: 
-        nonempty_str = inquirer.text(
-            message=msg, 
-            validate=IntOrExitValidator()
-        ).execute()
-
-        if nonempty_str.upper() == 'EXIT' or nonempty_str.upper() == 'E':
-            print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
-            return None
-
-        return nonempty_str
-
-
-class IntOrExitValidator(Validator):
-    def validate(self, document) -> None:
-        """Check if user input is a valid number.
-
-        See Also:
-            https://python-prompt-toolkit.readthedocs.io/en/master/pages/asking_for_input.html?highlight=validator#input-validation
-        """
-        text = document.text
-        if text.upper() == 'EXIT' or text.upper() == 'E':
-            return
-        elif text.isdigit():
-            return
-        else:
-            raise ValidationError(
-                message='Please enter a valid integer or "EXIT"/"E" to return to Main Menu',
-                cursor_position=len(text)
-            )
