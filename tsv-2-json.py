@@ -106,7 +106,7 @@ def tsv2json(input_file,output_file):
                     temp = f.strip(' \n').split(',')
                 if t == 'characters':
                    # temp = f.strip().split('\n')[0].strip(' "[]').split(',')
-                    temp = f.strip('\n "[]').split(',')
+                    temp = f.strip('\n "[]').split('","')
                 if temp[0] == '\\N':
                     temp = None
                 d[t] = temp
