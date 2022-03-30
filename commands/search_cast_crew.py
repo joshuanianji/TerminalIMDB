@@ -1,10 +1,6 @@
 import util
 from pymongo import MongoClient
-from pymongo.collection import Collection
-from InquirerPy import inquirer
 from colorama import Fore
-from InquirerPy.validator import EmptyInputValidator
-from prompt_toolkit.validation import Validator, ValidationError
 
 
 def search_cast_crew(client: MongoClient):
