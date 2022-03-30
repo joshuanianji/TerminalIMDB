@@ -9,9 +9,16 @@ def search_title(client: MongoClient):
     Searches titles until the user exits.
     '''
     while True:
-        user_exit = search_title_individual(client)
-        if user_exit:
-            return
+        try:
+            user_exit = search_title_individual(client)
+            if user_exit:
+                return
+        except KeyboardInterrupt:
+            print(f'{Fore.YELLOW}Escape pressed. Exiting...{Fore.RESET}')
+            exit()
+        except Exception as e:
+            print(f'{Fore.RED}Unknown exception occurred while reading prompt, please retry:{Fore.RESET}\n{e}')
+            continue
 
 def search_title_individual(client: MongoClient) -> bool:
     """
@@ -235,11 +242,7 @@ def show_movie_info(client: MongoClient, movie_id: str):
         'message': 'What would you like to do? (Arrow keys and enter to select)',
         'choices': choices
     }])
-    if answers == {}:
-        # if the user clicks wit their mouse or smoething
-        # we default to search again
-        return False
-    elif answers['choice'] == 'Search Again':
+    if answers['choice'] == 'Search Again':
         return False
     else:
         return True
