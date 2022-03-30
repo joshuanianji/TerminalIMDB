@@ -36,7 +36,7 @@ def search_title_individual(client: MongoClient) -> bool:
     Returns:
         user_exit: False if the user wants to exit back to main page, True if the user wants to continue searching
     """
-    print(f'{Fore.CYAN}Welcome to Search Title! At any time, press "EXIT/E" to return to main menu.{Fore.RESET}')
+    print(f'{Fore.CYAN}\nWelcome to Search Title! At any time, press "EXIT/E" to return to main menu.{Fore.RESET}')
     keywords = util.prompt_nonempty_string('Space separated keywords:')
     if keywords is None: return False
     keywords = keywords.split()
