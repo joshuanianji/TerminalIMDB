@@ -1,7 +1,9 @@
 colorama==0.4.4
-prompt-toolkit==1.0.14
+emoji==1.7.0
+inquirerpy==0.3.3
+pfzy==0.3.4
+prompt-toolkit==3.0.28
 Pygments==2.11.2
-PyInquirer==1.0.3
 pymongo==4.0.2
 regex==2022.3.15
 six==1.16.0
