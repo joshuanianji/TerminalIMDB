@@ -5,6 +5,9 @@ from pymongo.mongo_client import MongoClient
 
 
 def search_genre(client):
+    '''
+    Runs the search genre function of the program until the user chooses to return to the main menu
+    '''
     wantToSearch = True
     while wantToSearch:
         try:

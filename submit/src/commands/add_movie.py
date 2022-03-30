@@ -7,6 +7,12 @@ from pymongo.collection import Collection
 
 
 def add_movie(client: MongoClient):
+    '''
+    Runs the add movie function of the program until the user chooses to return to the main menu
+
+    keeps on calling add_movie_individual() if user wants to add one more movie
+    stop the call if user says no to add movie again prompt
+    '''
     wantToSearch = True
     while wantToSearch:
         try:
