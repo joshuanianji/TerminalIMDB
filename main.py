@@ -369,22 +369,37 @@ def addMovie(client):
     for j in res:
         print(j)
     #return
-    unId = input("Enter a unique id for the movie to be added\n")
-    title = input("Enter a title of the movie to be added\n")
+    while True:
+        unId = util.non_empty_string("Enter a unique id for the movie to be added\n")
+        res = title_basic_col.find_one({'tconst': unId})
+        if not res:
+            break
+        print('Non-unique ID')
+
+    title = util.non_empty_string("Enter a title of the movie to be added\n")
     startYear = util.get_valid_int_E("Enter the start year \n")
     runTime = util.get_valid_int_E("Enter the running time\n")
-    genreList = input("Enter the genres seperated by a comma\n").split(',')
+    genreList = util.non_empty_string("Enter the genres seperated by a comma\n").split(',')
     #arr = []
-    jsonQuery = dict()
-    jsonQuery ['primaryTitle'] = title
-    jsonQuery['originalTitle'] = title
-    jsonQuery['tconst'] = unId
-    jsonQuery['startYear'] = startYear
-    jsonQuery['runtimeMinutes'] = runTime
-    jsonQuery['genres'] = genreList
-    jsonQuery['titleType'] = 'movie'
-    jsonQuery['isAdult'] = None
-    jsonQuery['endYear'] = None
+    jsonQuery = {
+        'tconst': unId,
+        'primaryTitle': title,
+        'originalTitle': title,
+        'startYear': startYear,
+        'runtimeMinutes': runTime,
+        'genres': genreList,
+        'isAdult': None,
+        'endYear': None
+    }
+    # jsonQuery ['primaryTitle'] = title
+    # jsonQuery['originalTitle'] = title
+    # jsonQuery['tconst'] = unId
+    # jsonQuery['startYear'] = startYear
+    # jsonQuery['runtimeMinutes'] = runTime
+    # jsonQuery['genres'] = genreList
+    # jsonQuery['titleType'] = 'movie'
+    # jsonQuery['isAdult'] = None
+    # jsonQuery['endYear'] = None
     #arr.append(jsonQuery)
     title_basic_col.insert_one(jsonQuery)
    

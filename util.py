@@ -86,6 +86,11 @@ def get_valid_input(prompt, is_valid, error_msg='Please enter a valid input.', u
             return user_input.strip()
         print(error_msg)
 
+def non_empty_string(prompt) -> str:
+    user_input = get_valid_input(prompt, lambda x: len(x) > 0, "Please enter a non empty string")
+
+    return user_input
+
 def get_valid_int_E(prompt) -> int:
     user_input = get_valid_input(prompt, lambda x: x.isdigit() or x.upper() == 'EXIT' or x.upper() == 'E')
     if user_input == "Exit" or user_input == "E":
