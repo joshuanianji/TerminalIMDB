@@ -68,7 +68,7 @@ def prog():
                 message='Please enter the portNumber: ', 
                 validate=NumberValidator()
             ).execute()
-            client = MongoClient(host = 'localhost', port = portNumber, serverSelectionTimeoutMS = 15)
+            client = MongoClient(host = 'localhost', port = int(portNumber), serverSelectionTimeoutMS = 15)
             #create or open the LabH01 database server
             db = client['291db']
             colNames = ['name_basics', 'title_basics', 'title_ratings', 'title_principals']
