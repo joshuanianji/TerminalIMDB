@@ -67,8 +67,8 @@ def mainMenu(client):
             print('Searching for a genre...')
             searchGenre(client)
             # Remove after implementing exit commands in searchGenre()
-            print("Press Enter to return to the main menu.")
-            getpass(prompt="")
+           # print("Press Enter to return to the main menu.")
+            #getpass(prompt="")
 
         elif command == 'SC':
             reset_screen()
@@ -127,17 +127,26 @@ def searchGenre(client):
     os.system('cls' if os.name == 'nt' else 'clear')
     genre = input('Tell which genre are you interested to watch? ')
 
+    if genre.upper() == 'EXIT' or genre.upper() == 'E':
+        print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
+        return True
 
-    while True:
-        try:
-            minVoteCount = int(input('Tell minimum number of votes you would want for the search? '))
-            if minVoteCount < 0:
-                raise ValueError('value needs to be >= 0')
+    minVoteCount = util.get_valid_int_E('Tell minimum number of votes you would want for the search? ')
+
+    if not minVoteCount:
+        print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
+        return True
+        
+    # while True:
+    #     try:
+           
+    #         if minVoteCount < 0:
+    #             raise ValueError('value needs to be >= 0')
     
-        except Exception as e:
-                print(e.args)
-        else:
-            break
+    #     except Exception as e:
+    #             print(e.args)
+    #     else:
+    #         break
 
     
     pipeline = [
@@ -213,6 +222,10 @@ def searchGenre(client):
 
     if noResult:
         print("No Movie Title found, you can try to search again\n")
+
+    print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
+    return True
+    
 
 
 def searchCast(client):
@@ -376,7 +389,7 @@ def addMovie(client):
     jsonQuery['isAdult'] = None
     jsonQuery['endYear'] = None
     #arr.append(jsonQuery)
-    title_basic_col.insert_one(json.dumps(jsonQuery, indent=4))
+    title_basic_col.insert_one(jsonQuery)
    
   
     
