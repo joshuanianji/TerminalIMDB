@@ -350,8 +350,32 @@ def addMovie(client):
 
     Input: client - pymongo client to be processed
     """
-    
-
+    db = client['291db']
+    title_basic_col = db['title_basics']
+    res = title_basic_col.find({'primaryTitle': 'AlmerTheMuneer'})
+    for j in res:
+        print(j)
+    #return
+    unId = input("Enter a unique id for the movie to be added\n")
+    title = input("Enter a title of the movie to be added\n")
+    startYear = util.get_valid_int("Enter the start year \n")
+    runTime = util.get_valid_int("Enter the running time\n")
+    genreList = input("Enter the genres seperated by a comma\n").split(',')
+    #arr = []
+    jsonQuery = dict()
+    jsonQuery ['primaryTitle'] = title
+    jsonQuery['originalTitle'] = title
+    jsonQuery['tconst'] = unId
+    jsonQuery['startYear'] = startYear
+    jsonQuery['runtimeMinutes'] = runTime
+    jsonQuery['genres'] = genreList
+    jsonQuery['titleType'] = 'movie'
+    jsonQuery['isAdult'] = None
+    jsonQuery['endYear'] = None
+    #arr.append(jsonQuery)
+    title_basic_col.insert_one(json.dumps(jsonQuery, indent=4))
+   
+  
     
 
 
