@@ -10,6 +10,8 @@ from pymongo.errors import ServerSelectionTimeoutError
 import time
 from commands.search_title import search_title, show_movie_info
 
+
+
 def mongoConnect():
     """
     Takes user input for a port number and connects to the mongoDB database
@@ -101,16 +103,10 @@ def mainMenu(client):
 
 
 
-
-###TODO: Fill out all functions below
-
 def reset_screen(welcome_text = None, show_names = False):
     os.system('cls' if os.name == 'nt' else 'clear')
     util.starting_text(welcome_text, show_names)
     print('-'*70 + '\n')
-
-
-
 
 
 
@@ -216,6 +212,7 @@ def searchGenre(client):
 
     if noResult:
         print("No Movie Title found, you can try to search again\n")
+
 
 
 def searchCast(client):
@@ -356,9 +353,6 @@ def addMovie(client):
 
     Input: client - pymongo client to be processed
     """
-    
-
-    
 
 
 
@@ -377,28 +371,13 @@ def addCast(client):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def main():
     colorama.init()
     client = mongoConnect()
     reset_screen()
     mainMenu(client)
     client.close()
+
 
 
 if __name__ == "__main__":
