@@ -1,5 +1,4 @@
 from pymongo import MongoClient
-from getpass import getpass
 import os
 from colorama import Fore
 import colorama
@@ -8,8 +7,8 @@ from pymongo.errors import ServerSelectionTimeoutError
 from commands.search_title import search_title
 from commands.add_cast_crew import add_cast_crew
 from commands.search_genre import search_genre
+from commands.search_cast_crew import search_cast_crew
 from commands.add_movie import add_movie
-from commands.search_cast import search_cast
 
 
 def mongoConnect():
@@ -75,7 +74,7 @@ def mainMenu(client):
 
         elif command == 'SC':
             print('Searching for a cast/crew member...')
-            search_cast(client)
+            search_cast_crew(client)
             reset_screen()
 
         elif command == 'AM':
