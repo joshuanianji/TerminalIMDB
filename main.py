@@ -110,9 +110,6 @@ def mainMenu(client):
             reset_screen()
             print('Searching for a cast/crew member...')
             searchCast(client)
-            # Remove after implementing exit commands in searchCast()
-            print("Press Enter to return to the main menu.")
-            getpass(prompt="")
 
         elif command == 'AM':
             reset_screen()
@@ -404,12 +401,15 @@ def searchCast(client):
 
         for person in cursor:
 
-            print('#'*100+'\n')
+            personSep = '#'
+            roleSep = '-'
+
+            print('\n\n'+personSep*100+'\n')
             nameID = person["nconst"]
             name = person["primaryName"]
             professions = person["primaryProfession"]
 
-            print(f"Data for cast/crew member: {name} ({nameID})")
+            print(f"Data for movie person: {name} ({nameID})")
             print("Professions: ", end='')
             print(*professions, sep=', ')
 
@@ -456,7 +456,7 @@ def searchCast(client):
                     }
                 ]
             )
-            print('-'*100)
+            print(roleSep*100)
             for item in titlesCursor:
                 titleID = item["tconst"]
                 job = item["job"]
@@ -465,19 +465,24 @@ def searchCast(client):
 
                 # Played {char} ({job}) in {primaryTitle} ({titleID})
                 if char:
-                    outStr = f"Played {char} "
+                    outStr = f"Played '{char}' "
                     if job:
-                        outStr += f"({job}) in" 
-
+                        outStr += f"({job}) in "
+                    else:
+                         outStr += f"in "
                 else:
                     outStr = "Worked on "
                 
-                outStr += f"{primaryTitle} ({titleID})"
+                if primaryTitle:
+                    outStr += f"'{primaryTitle}' ({titleID})"
+                else:
+                    outStr += f" the movie with ID {titleID} (Title unknown)"
+
                 print(outStr)
 
-                input("Press Enter to see more results.")
+            input("\nPress Enter to see more results.")
             
-            input("No more results found, press Enter to return to the main menu")
+        input('\n' + personSep*100 + "\nNo more results found, press Enter to return to the main menu")
 
 
 
