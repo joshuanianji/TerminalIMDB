@@ -233,8 +233,11 @@ def show_movie_info(client: MongoClient, movie_id: str):
 
     idx = 0
     for person in cast_agg:
-        characters = ', '.join(person['characters'])
-        print(f'{person["primaryName"]} as {characters}')
+        if person['characters']:
+            characters = ', '.join(person['characters'])
+            print(f'{person["primaryName"]} as {characters}')
+        else:
+            print(f'{person["primaryName"]} as unknown')
         idx += 1
     if idx == 0:
         print(f'{Fore.YELLOW}No Cast members found!{Fore.RESET}')
