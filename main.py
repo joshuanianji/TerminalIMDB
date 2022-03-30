@@ -6,6 +6,7 @@ import colorama
 import util
 from pymongo.errors import ServerSelectionTimeoutError
 from commands.search_title import search_title
+from commands.add_cast_crew import add_cast_crew
 
 def mongoConnect():
     """
@@ -85,11 +86,7 @@ def mainMenu(client):
 
         elif command == 'AC':
             reset_screen()
-            print('Adding a new cast/crew member')
-            addCast(client)
-            # Remove after implementing exit commands in addCast()
-            print("Press Enter to return to the main menu.")
-            getpass(prompt="")
+            add_cast_crew(client)
 
         else:
             print('Exiting...')
