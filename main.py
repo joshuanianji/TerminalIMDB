@@ -42,6 +42,7 @@ def mainMenu(client):
     '''
 
     while True:
+        reset_screen()
         choices = [
             { 'value': 'ST', 'name': 'Search for a title' },
             { 'value': 'SG', 'name': 'Search for a genre' },
@@ -59,12 +60,10 @@ def mainMenu(client):
         command = raw_cmd['choice']
         
         if command == 'ST':
-            reset_screen()
             print('Searching for a title...')
             search_title(client)
 
         elif command == 'SG':
-            reset_screen()
             print('Searching for a genre...')
             searchGenre(client)
             # Remove after implementing exit commands in searchGenre()
@@ -72,12 +71,10 @@ def mainMenu(client):
             #getpass(prompt="")
 
         elif command == 'SC':
-            reset_screen()
             print('Searching for a cast/crew member...')
             searchCast(client)
 
         elif command == 'AM':
-            reset_screen()
             print('Adding a new movie...')
             addMovie(client)
             # Remove after implementing exit commands in addMovie()
@@ -85,7 +82,6 @@ def mainMenu(client):
             getpass(prompt="")
 
         elif command == 'AC':
-            reset_screen()
             add_cast_crew(client)
 
         else:
@@ -387,24 +383,6 @@ def addMovie(client):
     jsonQuery['endYear'] = None
     #arr.append(jsonQuery)
     title_basic_col.insert_one(jsonQuery)
-   
-  
-    
-
-
-
-def addCast(client):
-    """
-    Add a cast/crew member: 
-        > The user should be able to add a row to title_principals by providing a cast/crew member id, a title id, and a category. 
-        > The provided title and person ids should exist in name_basics and title_basics respectively (otherwise, proper messages should be given), 
-            the ordering should be set to the largest ordering listed for the title plus one (or 1 if the title is not listed in title_principals) 
-            and any other field that is not provided (including job and characters) set to Null.
-
-    Input: client - pymongo client to be processed
-    """
-    #TODO
-    pass
 
 
 
