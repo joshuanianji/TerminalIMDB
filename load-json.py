@@ -2,8 +2,10 @@ import json
 import os
 from pymongo import MongoClient
 import time 
-from colorama import Fore, Back, Style
+from colorama import Fore, Style
 import colorama
+from pymongo.errors import ServerSelectionTimeoutError
+
 
 
 def starting_text():
@@ -58,24 +60,25 @@ def starting_text():
 
 
 def prog():
+    collist = None
     while True:
         try:
-            portNumber = input('Please enter the portNumber: ')
-            client = MongoClient('mongodb://localhost:'+portNumber)
-        except:
-            print('Please Enter the correct portNumber. Cannot connect')
-            continue
-        finally:
+            portNumber = int(input('Please enter the portNumber: '))
+            client = MongoClient(host = 'localhost', port = portNumber, serverSelectionTimeoutMS = 15)
+            #create or open the LabH01 database server
+            db = client["291db"]
+            colNames = ['name_basics', 'title_basics', 'title_ratings', 'title_principals']
+            collist = db.list_collection_names()
             break
-    
+        except ServerSelectionTimeoutError:
+            print(f'{Fore.RED}Invalid port number!{Fore.RESET}')
+            continue
+        except Exception as err:
+            print(f'{Fore.RED}Error connecting to mongoDB!\n{err}\nPlease try again!{Fore.RESET}')
+            continue
+
     print(Fore.GREEN + 'Connected to MongoDB!' + Fore.RESET)
 
-    #create or open the LabH01 database server
-    db = client["291db"]
-        
-    colNames = ['name_basics', 'title_basics', 'title_ratings', 'title_principals']
-
-    collist = db.list_collection_names()
     for cName in colNames:
         if cName in collist:
             collection = db[cName]
