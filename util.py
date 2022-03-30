@@ -1,6 +1,6 @@
 from colorama import Fore, Back, Style
 import time
-from PyInquirer import prompt
+from InquirerPy import prompt
 
 RAINBOW = [Fore.RED, Fore.YELLOW, Fore.GREEN, Fore.BLUE, Fore.CYAN, Fore.MAGENTA, Fore.WHITE]
 
@@ -115,6 +115,6 @@ def get_valid_inquiry(questions):
     while True:
         answers = prompt(questions)
         if answers == {}:
-            print('Please select a correct option (no mouse presses!)')
+            print('Please enter a correct option (no mouse presses!)')
         else:
             return answers

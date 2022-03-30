@@ -35,33 +35,6 @@ def mongoConnect():
             return client
 
 
-commands = {
-    'ST': {
-        'name': 'Search for a title',
-        'color': Fore.RED
-    },
-    'SG': {
-        'name': 'Search for a genre',
-        'color': Fore.YELLOW
-    },
-    'SC': {
-        'name': 'Search for a cast/crew member',
-        'color': Fore.GREEN
-    },
-    'AM': {
-        'name': 'Add a movie',
-        'color': Fore.BLUE
-    },
-    'AC': {
-        'name': 'Add a new cast/crew member',
-        'color': Fore.CYAN
-    },
-    'EX': {
-        'name': 'Close the connection',
-        'color': Fore.MAGENTA
-    }
-}
-
 def mainMenu(client):
     '''
     Main user interface for the program
@@ -70,34 +43,27 @@ def mainMenu(client):
     Input: client - pymongo client to be processed
     '''
 
-    # Generate help message
-    helpMessage = ''
-    for cmd, data in commands.items():
-        helpMessage += f"{data['color']} {cmd} - {data['name']}{Fore.RESET}\n"
-    helpMessage = helpMessage.strip()
-    help = False
-
     while True:
-        if not help:
-            reset_screen('Welcome to the main menu! Enter your selection below!', show_names = True)
-        print(helpMessage)
-        help = False
-
-        # Get user command input
-
-        command = util.get_valid_input('> ', lambda cmd: cmd == 'H' or cmd in commands, 'Invalid command. Press "H" for help.', True)
-
-        # Handle user input
-        if command == 'H':
-            help = True
-
-        elif command == 'ST':
+        choices = [
+            { 'value': 'ST', 'name': 'Search for a title' },
+            { 'value': 'SG', 'name': 'Search for a genre' },
+            { 'value': 'SC', 'name': 'Search for a cast/crew member' },
+            { 'value': 'AM', 'name': 'Add a movie' },
+            { 'value': 'AC', 'name': 'Add a cast/crew member' },
+            { 'value': 'EX', 'name': 'Exit' }
+        ]
+        raw_cmd = util.get_valid_inquiry([{
+                'type': 'list',
+                'name': 'choice',
+                'message': 'Welcome to the main menu! Enter your selection below!',
+                'choices': choices
+            }])
+        command = raw_cmd['choice']
+        
+        if command == 'ST':
             reset_screen()
             print('Searching for a title...')
-            search_title(client, commands)
-            # Remove after implementing exit commands in searchTitle()
-            print("Press Enter to return to the main menu.")
-            getpass(prompt="")
+            search_title(client)
 
         elif command == 'SG':
             reset_screen()
@@ -332,53 +298,6 @@ def main():
     mainMenu(client)
     client.close()
 
-
-
-def main_2():
-    pipeline1 = [
-        {
-            "$lookup":   {
-                    "from" : "title_ratings",
-                    # "localField" :"tconst",
-                    # "foreignField": "tconst",
-                    "let":{"vote":"numVotes"},
-                    "pipeline":[
-                     {"$match": {
-                        "expr": {"$gte": ["$$vote", "$minVoteCount"]}
-                     } },
-                     {
-                     "$project":  
-                    {
-                    "_id": 0,
-                    }}],
-                    "as" : "voteAndRating"
-            }
-                # "project":  
-                # {
-                #     "_id": 0,
-                #     "numVotes": 1, 
-                #     "tconst": 1,
-                #     "primaryTitle": 1,
-                #  },
-                  
-        }
-    ]
-    from pprint import pprint
-    colorama.init()
-    client = mongoConnect()
-    title_basic_collection = client['291db']['title_basic']
-    aggResult2 = title_basic_collection.aggregate(pipeline1)
-    for res in aggResult2:
-        pprint(res)
-    client.close()
-
-
-def main_3():
-    # tt0083528
-    colorama.init()
-    client = mongoConnect()
-    show_movie_info(client, 'tt0083528')
-    client.close()
 
 if __name__ == "__main__":
     main()
