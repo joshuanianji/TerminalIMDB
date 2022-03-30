@@ -18,8 +18,7 @@ def mongoConnect():
     """
     while True:
         try:
-            # port = util.get_valid_int('Enter a port: ')
-            port = 27017
+            port = util.prompt_int_or_e('Enter a port: ')
             if port:
                 client = MongoClient(host = 'localhost', port = int(port), serverSelectionTimeoutMS = 15)
                 client.server_info()
