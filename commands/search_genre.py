@@ -10,9 +10,7 @@ def search_genre(client):
     while wantToSearch:
         wantToSearch = search_genre_c(client)
 
-    
     print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
-    time.sleep(3)
 
     return
 def search_genre_c(client):
