@@ -2,7 +2,6 @@ from colorama import Fore
 import util
 from pymongo.mongo_client import MongoClient
 from pymongo.collection import Collection
-from tabulate import tabulate
 from InquirerPy import inquirer
 from InquirerPy.base.control import Choice
 from pprint import pprint
@@ -71,6 +70,9 @@ def add_cast_crew_individual(client: MongoClient):
     if proceed:
         principals.insert_one(obj)
         print(f'{Fore.GREEN}Successfully added cast/crew member!{Fore.RESET}')
+    else:
+        print(f'{Fore.YELLOW}Scrapping crew member...{Fore.RESET}')
+        return False
 
     choices = ['Add another', 'Back to Main Menu']
     answers = util.get_valid_inquiry([{

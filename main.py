@@ -4,12 +4,11 @@ import os
 from colorama import Fore
 import colorama
 import util
-import time
 from pymongo.errors import ServerSelectionTimeoutError
 from commands.search_title import search_title
 from commands.add_cast_crew import add_cast_crew
 from commands.search_genre import search_genre
-
+from commands.add_movie import add_movie
 
 
 def mongoConnect():
@@ -84,10 +83,7 @@ def mainMenu(client):
 
         elif command == 'AM':
             print('Adding a new movie...')
-            addMovie(client)
-            # Remove after implementing exit commands in addMovie()
-            print("Press Enter to return to the main menu.")
-            getpass(prompt="")
+            add_movie(client)
             reset_screen()
 
         elif command == 'AC':
@@ -112,44 +108,6 @@ def reset_screen(welcome_text = None, show_names = False):
     os.system('cls' if os.name == 'nt' else 'clear')
     util.starting_text(welcome_text, show_names)
     print('-'*70 + '\n')
-
-
-def addMovie(client):
-    """
-    Add a movie: 
-        > The user should be able to add a row to title_basics by providing a unique id, a title, a start year, a running time and a list of genres. 
-        > Both the primary title and the original title will be set to the provided title, the title type is set to movie 
-            and isAdult and endYear are set to Null (denoted as \\N).
-
-    Input: client - pymongo client to be processed
-    """
-    db = client['291db']
-    title_basic_col = db['title_basics']
-    while True:
-        unId = util.non_empty_string("Enter a unique id for the movie to be added\n")
-        res = title_basic_col.find_one({'tconst': unId})
-        if not res:
-            break
-        print('Non-unique ID')
-
-    title = util.non_empty_string("Enter a title of the movie to be added\n")
-    startYear = util.get_valid_int_E("Enter the start year \n")
-    runTime = util.get_valid_int_E("Enter the running time\n")
-    genreList = util.non_empty_string("Enter the genres seperated by a comma\n").split(',')
-
-    jsonQuery = {
-        'tconst': unId,
-        'primaryTitle': title,
-        'originalTitle': title,
-        'startYear': startYear,
-        'runtimeMinutes': runTime,
-        'titleType': 'movie',
-        'genres': genreList,
-        'isAdult': None,
-        'endYear': None
-    }
-    title_basic_col.insert_one(jsonQuery)
-    title_basic_col.create_index('tconst')
 
 
 
