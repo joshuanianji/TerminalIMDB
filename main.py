@@ -74,9 +74,6 @@ def mainMenu(client):
             reset_screen()
             print('Searching for a cast/crew member...')
             searchCast(client)
-            # Remove after implementing exit commands in searchCast()
-            print("Press Enter to return to the main menu.")
-            getpass(prompt="")
 
         elif command == 'AM':
             reset_screen()
@@ -106,6 +103,7 @@ def mainMenu(client):
 def reset_screen(welcome_text = None, show_names = False):
     os.system('cls' if os.name == 'nt' else 'clear')
     util.starting_text(welcome_text, show_names)
+    print('-'*70 + '\n')
 
 
 
@@ -125,10 +123,6 @@ def searchGenre(client):
     db = client['291db']
 
     title_basic_collection = db['title_basics']
-    title_rating_collection = db['title_ratings']
-
-    #title_basic_collection.create_index('tconst')
-    #title_rating_collection.create_index('tconst')
     
     os.system('cls' if os.name == 'nt' else 'clear')
     genre = input('Tell which genre are you interested to watch? ')
@@ -147,25 +141,21 @@ def searchGenre(client):
 
     
     pipeline = [
-            { "$unwind": "$genres"},
+        { "$unwind": "$genres"},
         {"$match": 
             {"genres": 
-                    {
-                        '$regex': genre,
-                        '$options': 'i'
-                    }
+                {
+                    '$regex': genre,
+                    '$options': 'i'
+                }
             }
         },
-        {   
-            "$lookup":
-            {
-                "from" : "title_ratings",
+        {"$lookup":
+            {"from" : "title_ratings",
                 "localField" :"tconst",
                 "foreignField": "tconst",
-                "pipeline":
-                [
-                    {
-                        "$project":
+                "pipeline": [
+                    {"$project":
                         {
                             "numVotes": 1,
                             "averageRating": 1,
@@ -177,16 +167,16 @@ def searchGenre(client):
         },
         {"$unwind": "$voteAndRating"},
         {"$match": 
-          {"voteAndRating.numVotes": {"$gte": minVoteCount}
-               }   
-           },
+            {"voteAndRating.numVotes": 
+                {"$gte": minVoteCount}
+            }   
+        },
         {"$sort":
             {
                 "voteAndRating.averageRating":-1
                 #"voteAndRating.numVotes": -1
             }
         },
-     
         {"$project":
             {
                 "_id": 0,
@@ -195,13 +185,9 @@ def searchGenre(client):
                 "primaryTitle": 1
             }
         }
-           
-            ]
-     
+    ]
+
     aggResult = title_basic_collection.aggregate(pipeline)
-
-
-    count = 0
 
     if aggResult:
         titleHeader, averageRatHeader, numVotes = "Title ", "AR", "Votes"
@@ -227,7 +213,7 @@ def searchGenre(client):
 
     if noResult:
         print("No Movie Title found, you can try to search again\n")
-            
+
 
 def searchCast(client):
     """
@@ -238,8 +224,123 @@ def searchCast(client):
 
     Input: client - pymongo client to be processed
     """
-    #TODO
-    pass
+
+    db = client["291db"]
+    nameBasicsColl = db["name_basics"]
+    titlePrincipalsColl = db["title_principals"]
+
+    personSep = '#'
+    roleSep = '-'
+
+    crewName = input("Enter the cast/crew name: ").lower()
+    if crewName == 'exit' or crewName == 'e':
+        return
+
+    cursor = nameBasicsColl.aggregate(
+        [
+            {
+                "$match":{
+                    "primaryName":{
+                        "$regex": crewName,
+                        "$options": "i"
+                    }
+                }
+            },
+            {
+                "$project":{
+                    "nconst":1,
+                    "primaryName":1,
+                    "primaryProfession":1
+                }
+            }
+        ]
+    )
+
+    enterLoop = False
+    for person in cursor:
+        print('\n\n'+personSep*100+'\n')
+        nameID = person["nconst"]
+        name = person["primaryName"]
+        professions = person["primaryProfession"]
+
+        print(f"Data for movie person: {name} ({nameID})")
+        print("Professions: ", end='')
+        print(*professions, sep=', ')
+
+        # Find all the titles the movie person has participated in 
+        titlesCursor = titlePrincipalsColl.aggregate(
+            [
+                # Find all the instances of the movie person in title_principals
+                {
+                    "$match": {
+                        "nconst": nameID
+                    }
+                },
+                # Find the title of the movie mentioned in that instance
+                {
+                    "$lookup": {
+                        "from": 'title_basics',
+                        "localField": 'tconst',
+                        "foreignField": 'tconst',
+                        "as": 'movie'
+                    }
+                },
+                # Extract characters from array
+                {
+                    "$unwind": {
+                        "path": "$characters",
+                        "preserveNullAndEmptyArrays": True
+                    }
+                },
+                # Extract role as an object, from an array
+                {
+                    "$unwind": {
+                        "path": "$movie",
+                        "preserveNullAndEmptyArrays": True
+                    }
+                }
+            ]
+        )
+        print(roleSep*100)
+        for item in titlesCursor:
+            titleID = item["tconst"]
+            job = item["job"]
+            char = item["characters"]
+            primaryTitle = item["movie"]["primaryTitle"]
+
+            # Played {char} ({job}) in {primaryTitle} ({titleID})
+            if char:
+                outStr = f"Played '{char}' "
+                if job:
+                    outStr += f"({job}) in "
+                else:
+                        outStr += f"in "
+            else:
+                outStr = "Worked on "
+            
+            if primaryTitle:
+                outStr += f"'{primaryTitle}' ({titleID})"
+            else:
+                outStr += f" the movie with ID {titleID} (Title unknown)"
+
+            print(outStr)
+            enterLoop = True
+
+        leave = input("\nPress Enter to see more results (or enter exit to return to the main menu): ").lower()
+        if leave == 'exit':
+            cursor.close()
+            titlesCursor.close()
+            return
+        
+    if enterLoop:
+        tmpStr = '\n' + personSep*100 + "\nNo "
+    else:
+        tmpStr = "\nNo "
+    if enterLoop:
+        tmpStr += "more "
+    tmpStr += "results found, press Enter to return to the main menu."
+    input(tmpStr)
+    return
 
 
 
@@ -292,6 +393,7 @@ def addCast(client):
 def main():
     colorama.init()
     client = mongoConnect()
+    reset_screen()
     mainMenu(client)
     client.close()
 
