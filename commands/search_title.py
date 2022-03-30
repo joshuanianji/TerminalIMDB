@@ -1,8 +1,9 @@
-from typing import List
+from typing import Any, List
 from colorama import Fore
 import util
 from pymongo.mongo_client import MongoClient
 from tabulate import tabulate
+from typing import Union
 
 def search_title(client: MongoClient):
     '''
@@ -78,7 +79,7 @@ def search_title_individual(client: MongoClient) -> bool:
                 return True
 
         else:
-            print(f'Found {Fore.GREEN}{title_count}{Fore.RESET} titles. Select one for more info, or go to bottom for other options. \n')
+            print(f'Found {Fore.GREEN}{title_count}{Fore.RESET} titles. Select a title to get more information. \n')
             start_index = 0
             while True:
                 titles = list(collection.find(query).limit(50).skip(start_index)) # turn the cursor into a concrete list.
@@ -219,21 +220,34 @@ def show_movie_info(client: MongoClient, movie_id: str):
     print(f'Info for {Fore.GREEN}{movie["primaryTitle"]}{Fore.RESET}')
     print('=' * (len(movie['primaryTitle']) + 9))
 
-    print(f'Rating: {showRating(float(rating["averageRating"]))}')
-    print(f'Votes: {rating["numVotes"]}')
+    print(f'Rating: {showRating(rating)}')
+    print(f'Votes: {rating["numVotes"] if rating else "N/A"}')
 
-    print ('=' * (len(movie['primaryTitle']) + 9))
+    # SHOW CAST MEMBERS
+
+    print('=' * (len(movie['primaryTitle']) + 9))
     print(f'{Fore.GREEN}Cast{Fore.RESET}')
 
+    idx = 0
     for person in cast_agg:
         characters = ', '.join(person['characters'])
         print(f'{person["primaryName"]} as {characters}')
+        idx += 1
+    if idx == 0:
+        print(f'{Fore.YELLOW}No Cast members found!{Fore.RESET}')
+
+    # SHOW CREW MEMBERS
 
     print ('=' * (len(movie['primaryTitle']) + 9))
     print(f'{Fore.CYAN}Crew{Fore.RESET}')
+
+    idx = 0
     for crew in crew_agg:
         print(f'{crew["primaryName"]} as {crew["category"]}')
-
+        idx += 1
+    if idx == 0:
+        print(f'{Fore.YELLOW}No Crew members found!{Fore.RESET}')
+    
 
     choices = ['Search Again', 'Back to Main Menu']
     answers = util.get_valid_inquiry([{
@@ -248,16 +262,18 @@ def show_movie_info(client: MongoClient, movie_id: str):
         return True
 
 
-def showRating(rating: float):
+def showRating(rating: Union[Any, None]) -> str:
     """
     Displays the rating in a nice way
 
     Input: 
         rating - the rating to display
     """
-    if rating > 7.5:
+    if rating is None or rating["averageRating"] is None:
+        return 'N/A'
+    elif rating["averageRating"] > 7.5:
         return f'{Fore.GREEN}{rating}{Fore.RESET}'
-    elif rating > 5.0:
+    elif rating["averageRating"] > 5.0:
         return f'{Fore.YELLOW}{rating}{Fore.RESET}'
     else:
         return f'{Fore.RED}{rating}{Fore.RESET}'

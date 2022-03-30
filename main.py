@@ -54,12 +54,12 @@ def mainMenu(client):
             { 'value': 'SC', 'name': 'Search for a cast/crew member' },
             { 'value': 'AM', 'name': 'Add a movie' },
             { 'value': 'AC', 'name': 'Add a cast/crew member' },
-            { 'value': 'EX', 'name': 'Exit' }
+            { 'value': 'EX', 'name': 'Exit application' }
         ]
         raw_cmd = util.get_valid_inquiry([{
                 'type': 'list',
                 'name': 'choice',
-                'message': 'Welcome to the main menu! Enter your selection below!',
+                'message': 'Welcome to the main menu! Enter your selection below (arrow keys and enter)',
                 'choices': choices
             }])
         command = raw_cmd['choice']
