@@ -135,6 +135,7 @@ def search_cast_crew_individual(client: MongoClient):
         print()
         choices = [
             { 'value': 'y', 'name': 'More results' },
+            { 'value': 'c', 'name': 'Search again' },
             { 'value': 'n', 'name': 'Return to main menu' }
         ]
         raw_cmd = util.get_valid_inquiry([{
@@ -145,9 +146,13 @@ def search_cast_crew_individual(client: MongoClient):
         }])
         command = raw_cmd['choice']
 
-        print ("\033[A                                          \033[A")
-        print ("\033[A                                          \033[A")
+        print ("\033[A                                                                                    \033[A")
+        print ("\033[A                                                                                    \033[A")
         
+        if command == 'c':
+            print('\n' + personSep*100 + '\n Searching for a cast/crew member...')
+            return True
+
         if command == 'n':
             cursor.close()
             titlesCursor.close()
