@@ -73,8 +73,8 @@ def mainMenu(client):
             print('Searching for a genre...')
             search_genre(client)
             # Remove after implementing exit commands in searchGenre()
-            print("Press Enter to return to the main menu.")
-            getpass(prompt="")
+            #print("Press Enter to return to the main menu.")
+           # getpass(prompt="")
             reset_screen()
 
         elif command == 'SC':
@@ -125,28 +125,35 @@ def addMovie(client):
     """
     db = client['291db']
     title_basic_col = db['title_basics']
-    res = title_basic_col.find({'primaryTitle': 'AlmerTheMuneer'})
-    for j in res:
-        print(j)
+    # res = title_basic_col.find({'primaryTitle': 'AlmerTheMuneer'})
+    # for j in res:
+    #     print(j)
     #return
-    unId = input("Enter a unique id for the movie to be added\n")
-    title = input("Enter a title of the movie to be added\n")
+    while True:
+        unId = util.non_empty_string("Enter a unique id for the movie to be added\n")
+        res = title_basic_col.find_one({'tconst': unId})
+        if not res:
+            break
+        print('Non-unique ID')
+
+    title = util.non_empty_string("Enter a title of the movie to be added\n")
     startYear = util.get_valid_int_E("Enter the start year \n")
     runTime = util.get_valid_int_E("Enter the running time\n")
-    genreList = input("Enter the genres seperated by a comma\n").split(',')
-    #arr = []
-    jsonQuery = dict()
-    jsonQuery ['primaryTitle'] = title
-    jsonQuery['originalTitle'] = title
-    jsonQuery['tconst'] = unId
-    jsonQuery['startYear'] = startYear
-    jsonQuery['runtimeMinutes'] = runTime
-    jsonQuery['genres'] = genreList
-    jsonQuery['titleType'] = 'movie'
-    jsonQuery['isAdult'] = None
-    jsonQuery['endYear'] = None
-    #arr.append(jsonQuery)
+    genreList = util.non_empty_string("Enter the genres seperated by a comma\n").split(',')
+
+    jsonQuery = {
+        'tconst': unId,
+        'primaryTitle': title,
+        'originalTitle': title,
+        'startYear': startYear,
+        'runtimeMinutes': runTime,
+        'titleType': 'movie',
+        'genres': genreList,
+        'isAdult': None,
+        'endYear': None
+    }
     title_basic_col.insert_one(jsonQuery)
+    title_basic_col.create_index('tconst')
 
 
 

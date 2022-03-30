@@ -1,8 +1,21 @@
 import util
 import os
+import time
 from colorama import Fore
 
+
+
 def search_genre(client):
+    wantToSearch = True
+    while wantToSearch:
+        wantToSearch = search_genre_c(client)
+
+    
+    print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
+    time.sleep(3)
+
+    return
+def search_genre_c(client):
     '''
     Search for genres: 
         > The user should be able to provide a genre and a minimum vote count and see all titles under the provided genre 
@@ -100,8 +113,22 @@ def search_genre(client):
                     userChoice = False
 
     if noResult:
-        print("No Movie Title found, you can try to search again\n")
+        print(f"{Fore.RED}No Movie Title found, you can try to search again\n")
 
-    print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
-    return True
+    
+    choices = [
+        { 'value': 'y', 'name': 'Yes' },
+        { 'value': 'n', 'name': 'No' }
+    ]
+    raw_cmd = util.get_valid_inquiry([{
+            'type': 'list',
+            'name': 'choice',
+            'message': 'Would you like to make another search?',
+            'choices': choices
+        }])
+    command = raw_cmd['choice']
+
+    return command == 'y'
+
+  
 
