@@ -19,7 +19,7 @@ def search_genre(client):
             print(f'{Fore.RED}Unknown exception occurred while reading prompt, please retry:{Fore.RESET}\n{e}')
             continue
 
-    print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
+   # print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
     time.sleep(2)
     return
 
@@ -100,6 +100,7 @@ def search_genre_individual(client: MongoClient):
         titleHeader, averageRatHeader, numVotes = 'Title ', 'AR', 'Votes'
         
         print(f'|{titleHeader: <75} | {averageRatHeader: <4} | {numVotes:}')
+        print('-'*94)
         userChoice = True
         start = 0
         noResult = True
