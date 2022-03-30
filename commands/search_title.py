@@ -9,11 +9,10 @@ def search_title(client: MongoClient):
     '''
     Searches titles until the user exits.
     '''
-    while True:
+    wantToAdd = True
+    while wantToAdd:
         try:
-            user_exit = search_title_individual(client)
-            if user_exit:
-                return
+            wantToAdd = search_title_individual(client)
         except KeyboardInterrupt:
             print(f'{Fore.YELLOW}Escape pressed. Exiting...{Fore.RESET}')
             exit()
@@ -35,14 +34,16 @@ def search_title_individual(client: MongoClient) -> bool:
         client - pymongo client to be processed
     
     Returns:
-        user_exit: true if the user wants to exit back to main page, false if the user wants to continue searching
+        user_exit: False if the user wants to exit back to main page, True if the user wants to continue searching
     """
-    print(f'{Fore.CYAN}Please enter in your keywords (space separated), or "EXIT/E" to exit{Fore.RESET}')
-    keywords = util.get_valid_input('> ', lambda cmd: cmd.strip() != '', 'Please do not enter an empty string!', True).split()
+    print(f'{Fore.CYAN}Welcome to Search Title! At any time, press "EXIT/E" to return to main menu.{Fore.RESET}')
+    keywords = util.prompt_nonempty_string('Space separated keywords:')
+    if keywords is None: return False
+    keywords = keywords.split()
     
     if keywords[0] == 'EXIT' or keywords[0] == 'E':
         print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
-        return True 
+        return False 
     else:
         and_queries = []
         for keyword in keywords:
@@ -73,10 +74,7 @@ def search_title_individual(client: MongoClient) -> bool:
                 'message': 'No titles found for query! What would you like to do?',
                 'choices': choices
             }])
-            if answers['choice'] == 'Search Again':
-                return False
-            else:
-                return True
+            return answers['choice'] == 'Search Again'
 
         else:
             print(f'Found {Fore.GREEN}{title_count}{Fore.RESET} titles. Select a title to get more information. \n')
@@ -90,7 +88,7 @@ def search_title_individual(client: MongoClient) -> bool:
                 other_choices = ['Search Again', 'Back to Main Menu']
 
                 if len(titles) >= 50:
-                    print(f'{Fore.YELLOW}There may be more titles below.\n{Fore.RESET}')
+                    print(f'{Fore.YELLOW}Limiting results to first 50. There may be more titles below.\n{Fore.RESET}')
                     other_choices.append('See More Titles')
 
                 print(f'{Fore.CYAN}{headers}{Fore.RESET}')
@@ -101,9 +99,9 @@ def search_title_individual(client: MongoClient) -> bool:
                     'choices': other_choices + choices
                 }])
                 if answers['choice'] == 'Search Again':
-                    return False
-                elif answers['choice'] == 'Back to Main Menu':
                     return True
+                elif answers['choice'] == 'Back to Main Menu':
+                    return False
                 elif answers['choice'] == 'See More Titles':
                     start_index += 50
                     continue
@@ -111,6 +109,7 @@ def search_title_individual(client: MongoClient) -> bool:
                     # here, answers['choice'] will be the ID of the movie (tconst)
                     user_choice = show_movie_info(client, answers['choice'])
                     return user_choice
+
 
 def get_movies_display_list(titles: List[dict]) -> List[str]:
     """
@@ -247,7 +246,6 @@ def show_movie_info(client: MongoClient, movie_id: str):
         idx += 1
     if idx == 0:
         print(f'{Fore.YELLOW}No Crew members found!{Fore.RESET}')
-    
 
     choices = ['Search Again', 'Back to Main Menu']
     answers = util.get_valid_inquiry([{
@@ -256,10 +254,7 @@ def show_movie_info(client: MongoClient, movie_id: str):
         'message': 'What would you like to do? (Arrow keys and enter to select)',
         'choices': choices
     }])
-    if answers['choice'] == 'Search Again':
-        return False
-    else:
-        return True
+    return answers['choice'] == 'Search Again'
 
 
 def showRating(rating: Union[Any, None]) -> str:
