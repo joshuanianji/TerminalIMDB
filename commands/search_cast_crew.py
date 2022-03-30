@@ -105,7 +105,7 @@ def search_cast_crew_individual(client: MongoClient):
         )
         
         print(Fore.GREEN + "Appearances:" + Fore.RESET)
-        i=0 #################
+        i=0
         for item in titlesCursor:
             i+=1
             titleID = item["tconst"]
@@ -114,8 +114,7 @@ def search_cast_crew_individual(client: MongoClient):
             primaryTitle = item["movie"]["primaryTitle"]
 
             # Played {char} ({job}) in {primaryTitle} ({titleID})
-            outStr = '  • '
-            outStr = f'  {i:>4}) ' #################
+            outStr = f'  {i:>4}) '
             if char:
                 outStr += f"Played '{char}' "
                 if job:
