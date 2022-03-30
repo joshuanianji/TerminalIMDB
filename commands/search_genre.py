@@ -53,10 +53,6 @@ def search_genre_individual(client: MongoClient):
         {'$unwind': '$genres'},
         {'$match': 
             {'genres': re.compile(genre, re.IGNORECASE)
-                # {
-                #     '$regex': genre,
-                #     '$options': 'i'
-                # }
             }
         },
         {'$lookup':
