@@ -52,12 +52,7 @@ def search_genre_individual(client: MongoClient):
     pipeline = [
         {'$unwind': '$genres'},
         {'$match': 
-            {'genres': re.compile(genre, re.IGNORECASE)
-                # {
-                #     '$regex': genre,
-                #     '$options': 'i'
-                # }
-            }
+            {'genres': re.compile(genre, re.IGNORECASE)}
         },
         {'$lookup':
             {'from' : 'title_ratings',

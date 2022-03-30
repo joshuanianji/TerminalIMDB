@@ -1,6 +1,7 @@
 import util
 from pymongo import MongoClient
 from colorama import Fore
+import re
 
 
 def search_cast_crew(client: MongoClient):
@@ -38,14 +39,12 @@ def search_cast_crew_individual(client: MongoClient):
     crewName = util.prompt_nonempty_string('Crew member name:')
     if crewName is None: return False
 
+    crewName = f'^{crewName}$'
     cursor = nameBasicsColl.aggregate(
         [
             {
                 "$match":{
-                    "primaryName":{
-                        "$regex": crewName,
-                        "$options": "i"
-                    }
+                    "primaryName": re.compile(crewName, re.IGNORECASE)
                 }
             },
             {
@@ -118,11 +117,15 @@ def search_cast_crew_individual(client: MongoClient):
             if char:
                 outStr += f"Played '{char}' "
                 if job:
-                    outStr += f"({job}) in "
-                else:
-                        outStr += f"in "
+                    outStr += f"({job}) "
+                outStr += "in "
             else:
-                outStr += "Worked on "
+                outStr += "Worked "
+                if job: 
+                    outStr += f'as {job} on '
+                else:
+                    outStr += "on "
+
             
             if primaryTitle:
                 outStr += f"'{primaryTitle}' ({titleID})"
