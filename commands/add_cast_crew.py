@@ -95,7 +95,7 @@ def get_member_id(name: Collection):
         member_id = inquirer.text(message='Enter the member id:').execute()
         if member_id.upper() == 'EXIT' or member_id.upper() == 'E':
             print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
-            return True
+            return None
 
         # check to see if the member_id is in the database
         if name.count_documents({'nconst': member_id}) == 0:
@@ -108,11 +108,16 @@ def get_member_id(name: Collection):
 
 
 def get_title_id(title: Collection):
+    '''
+    Prompts the user for a member_id
+    
+    Returns none if the user wants to exit to the main menu
+    '''
     while True: # tt0910935
         title_id = inquirer.text(message='Enter the title id:').execute()
         if title_id.upper() == 'EXIT' or title_id.upper() == 'E':
             print(f'{Fore.CYAN}Returning to main menu...{Fore.RESET}')
-            return True
+            return None
         
         # check to see if the title_id is in the database
         if title.count_documents({'tconst': title_id}) == 0:
