@@ -82,11 +82,9 @@ def tsv2json(input_file,output_file):
         d = {}
         for t, f in zip(titles, line.split('\t')):
 
-           
-
             NestTitles = ['primaryProfession', 'knownForTitles', 'genres', 'characters']
             #integer titles
-            if t == "numVotes" or t == "ordering" or t == "birthYear" or t == "deathYear" or t == "startYear" or t == "endYear" or t == 'runtimeMinutes':
+            if t == "numVotes" or t == "ordering" or t == "birthYear" or t == "deathYear" or t == "endYear" or t == 'runtimeMinutes':
                 temp = f.strip()
                 if temp != '\\N':
                     d[t] = int(temp)
