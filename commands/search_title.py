@@ -4,16 +4,16 @@ import util
 from pymongo.mongo_client import MongoClient
 from tabulate import tabulate
 
-def search_title(client: MongoClient, commands):
+def search_title(client: MongoClient):
     '''
     Searches titles until the user exits.
     '''
     while True:
-        user_exit = search_title_individual(client, commands)
+        user_exit = search_title_individual(client)
         if user_exit:
             return
 
-def search_title_individual(client: MongoClient, commands) -> bool:
+def search_title_individual(client: MongoClient) -> bool:
     """
     Performs an individual search of the titles.
     Search for titles: 
@@ -25,7 +25,6 @@ def search_title_individual(client: MongoClient, commands) -> bool:
     
     Input: 
         client - pymongo client to be processed
-        commands: the command dictionary
     
     Returns:
         user_exit: true if the user wants to exit back to main page, false if the user wants to continue searching
