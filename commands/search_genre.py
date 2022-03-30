@@ -15,7 +15,6 @@ def search_genre(client):
 
     title_basic_collection = db['title_basics']
     
-    os.system('cls' if os.name == 'nt' else 'clear')
     genre = input('Tell which genre are you interested to watch? ')
 
     if genre.upper() == 'EXIT' or genre.upper() == 'E':
