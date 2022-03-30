@@ -47,12 +47,18 @@ def add_cast_crew_individual(client: MongoClient):
     if title_id is None:
         return False
 
-    category = util.prompt_nonempty_string(message='Enter the category:').execute()
+    category = util.prompt_nonempty_string(msg='Enter the category:')
     if category is None:
         return False
     
     # Set ordering to the largest ordering listed for the title plus one
-    order = list(principals.find({'tconst': title_id}).sort('ordering', -1).limit(1))[0]['ordering'] + 1
+    prinFind = principals.find_one({'tconst': title_id})
+    if prinFind:
+        order = list(principals.find({'tconst': title_id}).sort('ordering', -1).limit(1))[0]['ordering'] + 1
+    else:
+        order  = 1
+    
+
 
     obj = {
         'tconst': title_id,
