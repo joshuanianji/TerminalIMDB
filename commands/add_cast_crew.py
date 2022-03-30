@@ -3,7 +3,6 @@ import util
 from pymongo.mongo_client import MongoClient
 from pymongo.collection import Collection
 from InquirerPy import inquirer
-from InquirerPy.base.control import Choice
 from pprint import pprint
 
 
@@ -11,11 +10,10 @@ def add_cast_crew(client: MongoClient):
     '''
     Searches titles until the user exits.
     '''
-    while True:
+    wantToAdd = True
+    while wantToAdd:
         try:
-            user_exit = add_cast_crew_individual(client)
-            if user_exit:
-                return
+            wantToAdd = add_cast_crew_individual(client)
         except KeyboardInterrupt:
             print(f'{Fore.YELLOW}Escape pressed. Exiting...{Fore.RESET}')
             exit()
@@ -81,10 +79,7 @@ def add_cast_crew_individual(client: MongoClient):
         'message': 'What would you like to do now? (Arrow keys and enter to select)',
         'choices': choices
     }])
-    if answers['choice'] == 'Add another':
-        return False
-    else:
-        return True
+    return answers['choice'] == 'Add another'
 
 
 def get_member_id(name: Collection):
