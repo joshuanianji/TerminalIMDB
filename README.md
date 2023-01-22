@@ -1,7 +1,5 @@
 # IMDB like Movie DataBase Terminal App
 
-Davood 2: electric boogaloo.
-
 ## Local Development
 
 ```bash
